@@ -1,14 +1,17 @@
 class Printer
-  def initialize(board_x, board_y)
-    @board_x = board_x
-    @board_y = board_y
+  def update(board)
+    @board_x = board.dims[:x]
+    @board_y = board.dims[:y]
     create_board
+    add_ships(board.ships) if board.user == "Person"
+    add_guesses(board.guesses)
+    print_board
   end
 
   def create_board
     create_blank_board
     initialize_top_rows
-    initialize_sides_and_mddle
+    initialize_sides_and_middle
     @print_array
   end
 
@@ -44,9 +47,22 @@ class Printer
     end
   end
 
-  def update(guesses, ships={})
+  def add_ships(ships)
+    ships.each_with_index do |ship, i|
+      (ship.coords.length).times do |s|
+        @print_array[ship.coords[s][:y] + 2][(ship.coords[s][:x] + 1) * 2] = i.to_s
+      end
+    end
+  end
+
+  def add_guesses(guesses)
     guesses.each do |guess|
-      
+      if guess[:hit] == true
+        mark = "X"
+      else
+        mark = "O"
+      end
+      @print_array[guess[:y] + 2][(guess[:x] + 1) * 2] = mark
     end
   end
 

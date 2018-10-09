@@ -1,6 +1,9 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/printer.rb'
+require './lib/board.rb'
+
+### Update to run with  board class
 
 class PrinterTest < Minitest::Test
   def test_it_exists
@@ -12,7 +15,11 @@ class PrinterTest < Minitest::Test
 
   def test_it_creates_blank_board_array
     printer = Printer.new(1, 2)
-    blank_board = [[" ", " ", " "], [" ", " " " "]]
+    blank_board = [[" ", " ", " "], [" ", " ", " "],
+                  [" ", " ", " "], [" ", " ", " "],
+                  [" ", " ", " "]]
+    assert_equal blank_board, printer.create_blank_board
+  end
 
   def test_it_responds_to_create_board
     printer = Printer.new(10, 6)

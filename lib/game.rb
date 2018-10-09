@@ -3,10 +3,10 @@ class Game
     @board_x = options[:board_x]
     @board_y = options[:board_y]
     @a_i = options[:a_i]
-    @printer_player = Printer.new(@board_x, @board_y)
-    @printer_comp = Printer.new(@board_x, @board_y)
     @player_board = Board.new(@board_x, @board_y)
     @computer_board = Board.new(@board_x, @board_y)
+    @printer_player = Printer.new(@player_board)
+    @printer_comp = Printer.new(@computer_board)
   end
 
   def print_board(person)
