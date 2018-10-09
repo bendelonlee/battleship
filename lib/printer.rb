@@ -1,11 +1,11 @@
 class Printer
-  def update(board)
-    @board_x = board.dims[:x]
-    @board_y = board.dims[:y]
+  def print_board(board, show_ships = true)
+    @board_x = board.width
+    @board_y = board.height
     create_board
-    add_ships(board.ships) if board.user == "Person"
+    add_ships(board.ships) if show_ships
     add_guesses(board.guesses)
-    print_board
+    print_board_to_screen
   end
 
   def create_board
@@ -66,7 +66,7 @@ class Printer
     end
   end
 
-  def print_board
+  def print_board_to_screen
     @print_array.each do |line|
       print line.join + "\n"
     end
