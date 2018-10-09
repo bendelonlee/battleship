@@ -50,7 +50,7 @@ class Printer
   def add_ships(ships)
     ships.each_with_index do |ship, i|
       (ship.coords.length).times do |s|
-        @print_array[ship.coords[s][:y] + 2][(ship.coords[s][:x] + 1) * 2] = i.to_s
+        @print_array[ship.coords[s][:y] + 2][(ship.coords[s][:x] + 1) * 2] = i.to_s + 1
       end
     end
   end
