@@ -1,5 +1,9 @@
 require './lib/ship'
+require 'pry'
 class Board
+
+  OPPOSITE = {x: :y, y: :x}
+
   attr_reader :ships, :guesses
 
   def initialize(width, height)
@@ -10,35 +14,66 @@ class Board
   end
 
   #command_methods
-  def add_ship(coords)
-    info = validate_coords(coords)
-    if info == :valid
-      @ships << Ship.new(coords)
-    end
-    return info
+  def add_ship(start_coord, end_coord)
+    coords = get_conseq_coords(start_coord, end_coord)
+    @ships << Ship.new(coords)
   end
 
   #query_methods
 
-  def validate_coords(coords)
-    return :intersecting unless space_for_ship?(coords)
-    return :nonconseq unless coords_conseq?(coords)
-    return :out_of_range unless coords_in_range?(coords)
-    return :valid
+  def get_possible_end_coords(start_coord, ship_size)
+    get_end_coords_in_board(start_coord, ship_size).select do |end_coord|
+      space_for_ship?(get_conseq_coords(start_coord, end_coord))
+    end
   end
 
-  def coords_conseq?(coords)
-    xvals = coords.map{|c| c[:x]}
-    yvals = coords.map{|c| c[:y]}
-    xvals.uniq.size == 1 || yvals.uniq.size == 1
+  private
+
+  def get_end_coords_in_board(start_coord, ship_size)
+    result = []
+    diff = ship_size - 1
+    start_coord.each do |k,v|
+      [v + diff, v - diff].each do |i|
+        opp = OPPOSITE[k]
+        result << {k => i, opp => start_coord[opp]} if i <= @width && i > 0
+      end
+    end
+    result
   end
 
-  def coords_in_range?(coords)
-    coords.each {|c| return false unless coord_in_range?(c) }
-    true
+  def get_conseq_coords(start_coord, end_coord)
+    result = []
+    coords = [start_coord, end_coord]
+    x_or_y = x_or_y_in_line(coords)
+    line_val = start_coord[x_or_y]
+    get_range_from_coords(coords, OPPOSITE[x_or_y]).each do |i|
+      result << {x_or_y => line_val, OPPOSITE[x_or_y] => i}
+      # require 'pry'; binding.pry
+    end
+    result
   end
-  def coord_in_range?(coord)
-    coord[:x] < (@width) && coord[:y] < (@height)
+
+  def get_range_from_coords(coords, x_or_y)
+    nums = coords[0][x_or_y], coords[1][x_or_y]
+    (nums.min..nums.max)
+  end
+
+  def x_or_y_in_line(coords)
+    return :x if in_line?(:x, coords)
+    return :y if in_line?(:y, coords)
+    false
+  end
+
+  def in_line?(x_or_y, coords)
+    coords.map{|c| c[x_or_y]}.uniq.size == 1
+  end
+
+  def coords_in_board?(coords)
+    coords.all?{|c| coord_in_board?(c) }
+  end
+
+  def coord_in_board?(coord)
+    coord[:x].between?(1, @width) && coord[:y].between?(1, @height)
   end
 
   def space_for_ship?(coords)
