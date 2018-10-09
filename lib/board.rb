@@ -21,10 +21,6 @@ class Board
 
   #query_methods
 
-  def space_for_ship_at_start_coord?(start_coord, ship_size)
-    get_possible_end_coords(start_coord, ship_size).size > 0
-  end
-
   def get_possible_end_coords(start_coord, ship_size)
     get_end_coords_in_board(start_coord, ship_size).select do |end_coord|
       space_for_ship?(get_conseq_coords(start_coord, end_coord))

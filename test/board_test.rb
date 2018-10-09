@@ -25,6 +25,21 @@ class BoardTest < Minitest::Test
   # def help_add_ship [{x:1,y:1}{x:2,y:1}]
   # end
 
+
+  #public tests
+  def test_get_possible_end_coords_returns_empty_arr
+    assert_equal [], @board.get_possible_end_coords({x:1,y:1}, 7)
+  end
+
+  def test_get_possible_end_coords
+    help_add_ship2
+    actual = @board.get_possible_end_coords({x:4, y:4}, 3)
+    expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
+    assert_equal expected, actual
+    actual = @board.get_possible_end_coords({x:4, y:4}, 4)
+    assert_equal [{y:1, x:4}], actual
+  end
+
   #coord_math_method_tests
   def test_get_conseq_coords
     expected = [{x:1, y:2}, {x:2, y:2}, {x:3, y:2}]
@@ -35,16 +50,7 @@ class BoardTest < Minitest::Test
     assert_equal expected, actual
   end
 
-  def test_get_possible_end_coords
-    help_add_ship2
-    actual = @board.send(:get_possible_end_coords, *[{x:4, y:4}, 3])
-    expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
-    assert_equal expected, actual
-    actual = @board.send(:get_possible_end_coords, *[{x:4, y:4}, 4])
-    expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
-    assert_equal [{y:1, x:4}], actual
 
-  end
 
   def test_get_range_from_coords
     actual = @board.send(:get_range_from_coords, *[[{x:1,y:2},{x:6, y:2}], :x])
@@ -54,9 +60,7 @@ class BoardTest < Minitest::Test
 
 
 
-  def test_space_for_ship_at_start_coord
-    refute @board.space_for_ship_at_start_coord?({x:1,y:1}, 7)
-  end
+
 
   def test_get_end_coords_in_board
     assert_equal [], @board.send(:get_end_coords_in_board,{x:1, y:1}, 7)
