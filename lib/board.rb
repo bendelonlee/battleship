@@ -18,14 +18,12 @@ class Board
     return info
   end
 
-
-
   #query_methods
 
   def validate_coords(coords)
     return :intersecting unless space_for_ship?(coords)
     return :nonconseq unless coords_conseq?(coords)
-    return :out_of_range unless in_range?(coords)
+    return :out_of_range unless coords_in_range?(coords)
     return :valid
   end
 
@@ -36,10 +34,11 @@ class Board
   end
 
   def coords_in_range?(coords)
-    coords.each {|c| coord_in_range?(c)}
+    coords.each {|c| return false unless coord_in_range?(c) }
+    true
   end
   def coord_in_range?(coord)
-    coord[:x] < (@width - 1) && coord[:y] < (@height - 1)
+    coord[:x] < (@width) && coord[:y] < (@height)
   end
 
   def space_for_ship?(coords)
