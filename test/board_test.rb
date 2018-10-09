@@ -40,6 +40,12 @@ class BoardTest < Minitest::Test
     assert_equal [{y:1, x:4}], actual
   end
 
+  def test_it_adds_ship
+    help_add_ship1
+    expected = [{x:1, y:3}, {x:1, y:4}, {x:1, y:5}]
+    assert_equal expected, @board.ships[0].coords
+  end
+
   #coord_math_method_tests
   def test_get_conseq_coords
     expected = [{x:1, y:2}, {x:2, y:2}, {x:3, y:2}]
@@ -74,11 +80,7 @@ class BoardTest < Minitest::Test
 
 
 
-  def test_it_adds_ship
-    help_add_ship1
-    expected = [{x:1, y:3}, {x:1, y:4}, {x:1, y:5}]
-    assert_equal expected, @board.ships[0].coords
-  end
+
 
 
   def test_coord_in_board
@@ -107,9 +109,6 @@ class BoardTest < Minitest::Test
     @coords = [{x:1, y:1},{x:4, y:5}]
     refute @board.send(:x_or_y_in_line, @coords)
   end
-
-
-
 
   def test_space_for_ship?
     help_add_ship1
