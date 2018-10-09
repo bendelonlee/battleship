@@ -6,6 +6,7 @@ class Game
   def initialize(options)
     board_width = options[:board_width]
     board_height = options[:board_height]
+    ship_lengths = options[:ships]
     # a_i = options[:a_i]
 
     @player_board = Board.new(board_width, board_height)
@@ -13,31 +14,58 @@ class Game
 
     @printer = Printer.new
 
-    ship_lengths = [2, 3]
     place_computer_ships(ship_lengths)
     place_player_ships(ship_lengths)
 
-    binding.pry
+    loop do
+      player_round(@player_board, "Player")
+      if game_over? @player_board
+        puts "You have defeated the enemy!!!"
+        break
+      end
+      computer_round(@computer_board, "Computer")
+      if game_over? @computer_board
+        puts "The enemy has defeated your fleet!"
+        break
+      end
+    end
+    puts "Complete"
+  end
+
+  def game_over? board
+    sunk_ships = 0
+    board.ships.each do |ship|
+      sunk_ships += 1 if ship.sunk?
+    end
+    if sunk_ships == board_ships.length
+      return true
+    else
+      return false
+    end
   end
 
   def place_player_ships(ship_lengths)
     # quick instuction
     ship_lengths.each do |len|
+      @printer.print_board(@player_board)
       puts "Time to place a #{len} unit long ship"
-      puts "Enter start coordinate"
+      puts "Enter start coordinate (Ex. A3)"
       print "> "
       start_raw = $stdin.gets.chomp
-      puts "Enter end coordinate"
+      puts "Enter end coordinate (Ex. A5)"
       print "> "
       end_raw = $stdin.gets.chomp
       start_coord = convert(start_raw)
       end_coord = convert(end_raw)
       @player_board.add_ship(start_coord, end_coord)
     end
+    puts "Ship placement complete:"
+    @printer.print_board(@player_board)
+    sleep 3
   end
 
   def convert(raw)
-    letter = raw[0]
+    letter = raw[0].upcase
     x_val = raw[1..-1].to_i - 1
     alpha_hash = ("A".."Z").zip(1..26).to_h
     y_val = alpha_hash[letter] - 1
@@ -54,7 +82,6 @@ class Game
       end
       @computer_board.add_ship(start_coord, end_coord)
     end
-    binding.pry
   end
 
   def print_board(person)
