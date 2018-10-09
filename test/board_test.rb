@@ -37,8 +37,12 @@ class BoardTest < Minitest::Test
 
   def test_get_possible_end_coords
     help_add_ship2
-    actual = @board.send(:get_possible_end_coords, *[{x:1, y:4}, 3])
-    assert_equal :something, actual
+    actual = @board.send(:get_possible_end_coords, *[{x:4, y:4}, 3])
+    expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
+    assert_equal expected, actual
+    actual = @board.send(:get_possible_end_coords, *[{x:4, y:4}, 4])
+    expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
+    assert_equal [{y:1, x:4}], actual
 
   end
 
@@ -60,6 +64,8 @@ class BoardTest < Minitest::Test
     assert_equal expected, @board.send(:get_end_coords_in_board,{x:1, y:1}, 6)
     expected = [{x:4, y:3},{x:2, y:3},{x:3, y:4},{x:3, y:2}]
     assert_equal expected, @board.send(:get_end_coords_in_board,{x:3, y:3}, 2)
+    expected = [{:x=>3, :y=>4}, {:y=>6, :x=>1}, {:y=>2, :x=>1}]
+    assert_equal expected, @board.send(:get_end_coords_in_board,{x:1, y:4}, 3)
   end
 
 

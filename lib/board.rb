@@ -35,10 +35,11 @@ class Board
 
   def get_end_coords_in_board(start_coord, ship_size)
     result = []
-    ship_size -= 1
+    diff = ship_size - 1
     start_coord.each do |k,v|
-      [v + ship_size, v - ship_size].each do |i|
-        result << {k => i, OPPOSITE[k] => v} if i <= @width && i > 0
+      [v + diff, v - diff].each do |i|
+        opp = OPPOSITE[k]
+        result << {k => i, opp => start_coord[opp]} if i <= @width && i > 0
       end
     end
     result
