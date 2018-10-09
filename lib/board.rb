@@ -14,6 +14,7 @@ class Board
 
   #command_methods
   def add_ship(start_coord, end_coord)
+      coords = get_conseq_coords(start_coord, end_coord)
       @ships << Ship.new(coords)
   end
 
@@ -43,23 +44,20 @@ class Board
 
   def get_conseq_coords(start_coord, end_coord)
     result = []
-    x_or_y = x_or_y_in_line(coords)
-    line_val = start_coord.x_or_y
     coords = [start_coord, end_coord]
+    x_or_y = x_or_y_in_line(coords)
+    line_val = start_coord[x_or_y]
     get_range_from_coords(coords, OPPOSITE[x_or_y]).each do |i|
       result << {x_or_y => line_val, OPPOSITE[x_or_y] => i}
+      # require 'pry'; binding.pry
+
     end
+    result
   end
 
   def get_range_from_coords(coords, x_or_y)
-    (coords[0].x_or_y..coords[1].x_or_y)
-  end
-
-  def validate_coords(coords)
-    return :intersecting unless space_for_ship?(coords)
-    return :nonconseq unless coords_conseq?(coords)
-    return :out_of_range unless coords_in_range?(coords)
-    return :valid
+    nums = coords[0][x_or_y], coords[1][x_or_y]
+    (nums.min..nums.max)
   end
 
   def x_or_y_in_line(coords)
@@ -69,7 +67,7 @@ class Board
   end
 
   def in_line?(x_or_y, coords)
-    coords.map{|c| c[x_or_y]}.unique.size == 1
+    coords.map{|c| c[x_or_y]}.uniq.size == 1
   end
 
   def coords_in_board?(coords)
