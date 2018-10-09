@@ -4,7 +4,7 @@ class Board
 
   OPPOSITE = {x: :y, y: :x}
 
-  attr_reader :ships, :guesses
+  attr_reader :ships, :guesses, :width, :height
 
   def initialize(width, height)
     @width = width
