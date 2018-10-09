@@ -11,10 +11,9 @@ class ShipTest < Minitest::Test
     assert_equal ([{x:1, y:5},{x:1, y:4}]), @ship.coords
   end
 
-  def test_it_knows_size
-    assert_equal 2, @ship.size
-    assert_equal 3, @ship2.size
-
+  def test_sinks_when_hit_enough
+    2.times{@ship.take_hit}
+    assert @ship.sunk?
   end
 
 end

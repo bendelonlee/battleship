@@ -1,4 +1,5 @@
 require './lib/ship'
+require 'pry'
 class Board
 
   OPPOSITE = {x: :y, y: :x}
@@ -14,14 +15,14 @@ class Board
 
   #command_methods
   def add_ship(start_coord, end_coord)
-      coords = get_conseq_coords(start_coord, end_coord)
-      @ships << Ship.new(coords)
+    coords = get_conseq_coords(start_coord, end_coord)
+    @ships << Ship.new(coords)
   end
 
   #query_methods
 
   def space_for_ship_at_start_coord?(start_coord, ship_size)
-    get_possible_end_coords(start_coord, ship_size).any?
+    get_possible_end_coords(start_coord, ship_size).size > 0
   end
 
   def get_possible_end_coords(start_coord, ship_size)
@@ -34,9 +35,10 @@ class Board
 
   def get_end_coords_in_board(start_coord, ship_size)
     result = []
+    ship_size -= 1
     start_coord.each do |k,v|
-      [v + 4, v - 4].each do |i|
-         result << {k => i} if i <= @width
+      [v + ship_size, v - ship_size].each do |i|
+        result << {k => i, OPPOSITE[k] => v} if i <= @width && i > 0
       end
     end
     result
@@ -50,7 +52,6 @@ class Board
     get_range_from_coords(coords, OPPOSITE[x_or_y]).each do |i|
       result << {x_or_y => line_val, OPPOSITE[x_or_y] => i}
       # require 'pry'; binding.pry
-
     end
     result
   end
@@ -71,11 +72,11 @@ class Board
   end
 
   def coords_in_board?(coords)
-    coords.each {|c| return false unless coord_in_board?(c) }
-    true
+    coords.all?{|c| coord_in_board?(c) }
   end
+
   def coord_in_board?(coord)
-    coord[:x] < (@width) && coord[:y] < (@height)
+    coord[:x].between?(1, @width) && coord[:y].between?(1, @height)
   end
 
   def space_for_ship?(coords)
