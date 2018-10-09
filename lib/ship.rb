@@ -4,11 +4,10 @@ class Ship
   def initialize(coords)
     @coords = coords
     @hits = 0
-    @size = coords.size
   end
 
   def sunk?
-    @hits >= @size
+    @hits >= coords.size
   end
 
   def take_hit
