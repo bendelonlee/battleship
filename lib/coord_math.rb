@@ -1,11 +1,8 @@
-class CoordMath
+class CoordMath < Hash
   OPPOSITE = {x: :y, y: :x}
 
   class <<self
-    def get_end_coords_in_board(start_coord, ship_size)
-      get_4_coords(start_coord, ship_size - 1).select{|c| coord_in_board? (c)}
-    end
-
+    
     def get_neighbors(coord)
       get_4_coords(coord, 1)
     end
@@ -50,7 +47,7 @@ class CoordMath
       coord[:x].between?(1, board.width) && coord[:y].between?(1, board.height)
     end
 
-    
+
 
     def space_for_ship?(coords)
       coords.all?{ |c| space_open?(c)}

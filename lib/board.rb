@@ -36,5 +36,6 @@ class Board
   def any_guess_at_coord?(coord)
     @guesses.any?{|g| g.coord == coord}
   end
+  
 
 end
