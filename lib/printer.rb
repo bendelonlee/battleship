@@ -57,12 +57,12 @@ class Printer
 
   def add_guesses(guesses)
     guesses.each do |guess|
-      if guess[:hit] == true
+      if guess.hit == true
         mark = "X"
       else
         mark = "O"
       end
-      @print_array[guess[:y] + 2][(guess[:x] + 1) * 2] = mark
+      @print_array[guess.coord[:y] + 2][(guess.coord[:x] + 1) * 2] = mark
     end
   end
 

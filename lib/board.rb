@@ -4,7 +4,8 @@ class Board
 
   OPPOSITE = {x: :y, y: :x}
 
-  attr_reader :ships, :guesses, :width, :height
+  attr_reader :ships, :width, :height
+  attr_accessor :guesses
 
   def initialize(width, height)
     @width = width
@@ -73,7 +74,7 @@ class Board
   end
 
   def coord_in_board?(coord)
-    coord[:x].between?(1, @width) && coord[:y].between?(1, @height)
+    coord[:x].between?(1, @width - 1) && coord[:y].between?(1, @height - 1)
   end
 
   def space_for_ship?(coords)
