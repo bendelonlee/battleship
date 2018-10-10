@@ -5,6 +5,8 @@ require 'pry'
 
 class Game
   def initialize(options)
+    start_time = Time.now
+
     board_width = options[:board_width]
     board_height = options[:board_height]
     ship_lengths = options[:ships]
@@ -19,6 +21,10 @@ class Game
     place_player_ships(ship_lengths)
 
     playing_loop
+
+    end_time = Time.now
+    total_seconds = end_time - start_time
+    puts "The game took #{total_seconds / 60} minutes, #{total_seconds % 60} seconds."
   end
 
   def playing_loop
@@ -27,12 +33,14 @@ class Game
       if @enemy_fleet.all_sunk?
         @printer.print_board(@enemy_fleet, false)
         puts "You have defeated the enemy!!!"
+        puts "It took you #{@enemy_fleet.guesses.count} shots."
         break
       end
       enemy_round
       if @player_fleet.all_sunk?
         @printer.print_board(@player_fleet)
         puts "The enemy has defeated your fleet!"
+        puts "It took them #{@enemy_fleet.guesses.count} shots."
         break
       end
     end
@@ -52,6 +60,7 @@ class Game
     else
       coord = convert(strike)
       @enemy_fleet.add_guess(coord)
+      # add hit/miss dialog; add if it sinks a ship
     end
   end
 
@@ -61,6 +70,7 @@ class Game
     coord = {x: x_coord, y: y_coord}
     @player_fleet.guesses << Guess.new(@player_fleet, coord)
     @printer.print_board(@player_fleet)
+    # add hit/miss dialong along with computer shot location; add if it sinks a ship
   end
 
   def place_player_ships(ship_lengths)
