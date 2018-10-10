@@ -107,4 +107,11 @@ class Game
       puts "Invalid printer"
     end
   end
+
+  def pf
+    @player_fleet
+  end
+  def ef
+    @enemy_fleet
+  end
 end
