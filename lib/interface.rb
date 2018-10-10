@@ -49,7 +49,7 @@ class Interface
     if new_x > 26 || new_x < 4
       puts "Invalid option. Option skipped."
     else
-      @options[:board_x] = new_x
+      @options[:board_width] = new_x
     end
   end
 
@@ -60,7 +60,7 @@ class Interface
     if new_y > 26 || new_y < 4
       puts "Invalid option. Option skipped."
     else
-      @options[:board_y] = new_y
+      @options[:board_height] = new_y
     end
   end
 
@@ -86,9 +86,10 @@ class Interface
       puts "Enter length for ship #{ship_count}"
       print "> "
       ship_length = $stdin.gets.chomp.to_i
-      ships << ship_length
       if ship_length == 0
         finished = true
+      else
+        ships << ship_length
       end
     end
     @options[:ships] = ships

@@ -21,11 +21,13 @@ class Game
     loop do
       player_round
       if @enemy_fleet.all_sunk?
+        @printer.print_board(@enemy_fleet, false)
         puts "You have defeated the enemy!!!"
         break
       end
       enemy_round
       if @player_fleet.all_sunk?
+        @printer.print_board(@player_fleet)
         puts "The enemy has defeated your fleet!"
         break
       end
@@ -51,10 +53,11 @@ class Game
   end
 
   def enemy_round
-    x_coord = rand(@player_fleet.width)
-    y_coord = rand(@player_fleet.height)
+    x_coord = rand(@player_fleet.width) + 1
+    y_coord = rand(@player_fleet.height) + 1
     coord = {x: x_coord, y: y_coord}
     @player_fleet.guesses << Guess.new(@player_fleet, coord)
+    @printer.print_board(@player_fleet)
   end
 
   def place_player_ships(ship_lengths)
@@ -78,9 +81,9 @@ class Game
 
   def convert(raw)
     letter = raw[0].upcase
-    x_val = raw[1..-1].to_i - 1
+    x_val = raw[1..-1].to_i
     alpha_hash = ("A".."Z").zip(1..26).to_h
-    y_val = alpha_hash[letter] - 1
+    y_val = alpha_hash[letter]
     { x: x_val, y: y_val }
   end
 
@@ -88,7 +91,7 @@ class Game
     ship_lengths.each do |len|
       start_coord, end_coord = {}, {}
       loop do
-        start_coord = { x: rand(@enemy_fleet.width), y: rand(@enemy_fleet.height) }
+        start_coord = { x: rand(@enemy_fleet.width) + 1, y: rand(@enemy_fleet.height) + 1}
         end_coord = @enemy_fleet.get_possible_end_coords(start_coord, len).sample
         break unless end_coord == nil
       end
