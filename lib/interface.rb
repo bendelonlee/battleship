@@ -1,7 +1,11 @@
+require './lib/game.rb'
+
 class Interface
   def initialize
-    @options = { board_x: 4, board_y: 4, a_i: false }
-    puts "Welcome to BATTLESHIP!", ""
+    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: false }
+    puts "========================================="
+    puts "Welcome to the Battleship showdown!"
+    puts "========================================="
     interface_loop
   end
 
@@ -26,14 +30,16 @@ class Interface
   end
 
   def instructions
-    puts "", "Kill their battleship."
-    puts "Don't let them kill you.", ""
+    puts "===================", "Kill their battleship."
+    puts "Don't let them kill you.", "==================="
   end
 
   def change_options
     change_x
     change_y
+    change_ships
     change_ai
+    puts "Options updated", ""
   end
 
   def change_x
@@ -70,4 +76,21 @@ class Interface
     end
   end
 
+  def change_ships
+    puts "Enter lengths of ships one by one. Press (q) when finished"
+    finished = false
+    ship_count = 0
+    ships = []
+    until finished == true
+      ship_count += 1
+      puts "Enter length for ship #{ship_count}"
+      print "> "
+      ship_length = $stdin.gets.chomp.to_i
+      ships << ship_length
+      if ship_length == 0
+        finished = true
+      end
+    end
+    @options[:ships] = ships
+  end
 end
