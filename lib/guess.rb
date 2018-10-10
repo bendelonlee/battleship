@@ -6,6 +6,7 @@ class Guess
     board.ships.each do |ship|
       ship.coords.each do |each_coord|
         if each_coord == @coord
+          ship.take_hit
           @hit = true
         end
       end
