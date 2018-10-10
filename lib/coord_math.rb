@@ -47,8 +47,10 @@ class CoordMath
     end
 
     def coord_in_board?(coord, board)
-      coord[:x].between?(1, baord.width) && coord[:y].between?(1, board.height)
+      coord[:x].between?(1, board.width) && coord[:y].between?(1, board.height)
     end
+
+    
 
     def space_for_ship?(coords)
       coords.all?{ |c| space_open?(c)}
