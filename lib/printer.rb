@@ -16,6 +16,7 @@ class Printer
   end
 
   def create_blank_board
+    #: warning: block supersedes default value argument
     @print_array = Array.new(@board_y + 3, " ") { Array.new(@board_x * 2 + 1, " ") }
   end
 
