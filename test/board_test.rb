@@ -102,8 +102,8 @@ class BoardTest < Minitest::Test
 
   def test_space_for_ship?
     help_add_ship1
-    assert @board.send(:coords_in_board?, [{x:1, y:2},{x:2, y:2}])
-    assert @board.send(:coords_in_board?, [{x:1, y:3},{x:1, y:2}])
+    assert @board.send(:test_space_for_ship?, [{x:1, y:2},{x:2, y:2}])
+    assert @board.send(:test_space_for_ship?, [{x:1, y:3},{x:1, y:2}])
   end
 
 
