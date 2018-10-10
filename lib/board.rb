@@ -74,7 +74,7 @@ class Board
   end
 
   def coord_in_board?(coord)
-    coord[:x].between?(1, @width - 1) && coord[:y].between?(1, @height - 1)
+    coord[:x].between?(1, @width) && coord[:y].between?(1, @height)
   end
 
   def space_for_ship?(coords)
