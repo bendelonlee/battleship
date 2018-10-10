@@ -18,6 +18,10 @@ class Game
     place_computer_ships(ship_lengths)
     place_player_ships(ship_lengths)
 
+    playing_loop
+  end
+
+  def playing_loop
     loop do
       player_round
       if @enemy_fleet.all_sunk?
@@ -32,7 +36,6 @@ class Game
         break
       end
     end
-    puts "Complete"
   end
 
   def player_round
