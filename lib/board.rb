@@ -28,6 +28,10 @@ class Board
     end
   end
 
+  def all_sunk?
+    @ships.all?{|ship| ship.sunk?}
+  end
+
   private
 
   def get_end_coords_in_board(start_coord, ship_size)
