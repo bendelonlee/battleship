@@ -38,6 +38,9 @@ class Game
     puts "Enter coordinate of next strike (Ex. A3)"
     print "> "
     strike = $stdin.gets.chomp
+    if strike == 'pry'
+      binding.pry
+    end
     if strike == "board"
       @printer.print_board(@enemy_fleet)
       binding.pry
