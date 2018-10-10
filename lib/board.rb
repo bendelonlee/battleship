@@ -28,18 +28,23 @@ class Board
     end
   end
 
+  def all_sunk?
+    @ships.all?{|ship| ship.sunk?}
+  end
+
   private
 
   def get_end_coords_in_board(start_coord, ship_size)
-    result = []
-    diff = ship_size - 1
-    start_coord.each do |k,v|
-      [v + diff, v - diff].each do |i|
+    get_4_coords(start_coord, ship_size - 1).select{|c| coord_in_board? (c)}
+  end
+
+  def get_4_coords(start_coord, dist)
+    start_coord.map { |k,v|
+      [v + dist, v - dist].map do |i|
         opp = OPPOSITE[k]
-        result << {k => i, opp => start_coord[opp]} if i <= @width && i > 0
+        {k => i, opp => start_coord[opp]}
       end
-    end
-    result
+    }.flatten
   end
 
   def get_conseq_coords(start_coord, end_coord)
@@ -69,12 +74,8 @@ class Board
     coords.map{|c| c[x_or_y]}.uniq.size == 1
   end
 
-  def coords_in_board?(coords)
-    coords.all?{|c| coord_in_board?(c) }
-  end
-
   def coord_in_board?(coord)
-    coord[:x].between?(1, @width - 1) && coord[:y].between?(1, @height - 1)
+    coord[:x].between?(1, @width) && coord[:y].between?(1, @height)
   end
 
   def space_for_ship?(coords)

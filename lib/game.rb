@@ -20,12 +20,12 @@ class Game
 
     loop do
       player_round
-      if game_over? @enemy_fleet
+      if @enemy_fleet.all_sunk?
         puts "You have defeated the enemy!!!"
         break
       end
       enemy_round
-      if game_over? @player_fleet
+      if @player_fleet.all_sunk?
         puts "The enemy has defeated your fleet!"
         break
       end
@@ -38,6 +38,9 @@ class Game
     puts "Enter coordinate of next strike (Ex. A3)"
     print "> "
     strike = $stdin.gets.chomp
+    if strike == 'pry'
+      binding.pry
+    end
     if strike == "board"
       @printer.print_board(@enemy_fleet)
       binding.pry
@@ -52,18 +55,6 @@ class Game
     y_coord = rand(@player_fleet.height)
     coord = {x: x_coord, y: y_coord}
     @player_fleet.guesses << Guess.new(@player_fleet, coord)
-  end
-
-  def game_over? board
-    sunk_ships = 0
-    board.ships.each do |ship|
-      sunk_ships += 1 if ship.sunk?
-    end
-    if sunk_ships == board.ships.length
-      return true
-    else
-      return false
-    end
   end
 
   def place_player_ships(ship_lengths)
@@ -115,5 +106,12 @@ class Game
     else
       puts "Invalid printer"
     end
+  end
+
+  def pf
+    @player_fleet
+  end
+  def ef
+    @enemy_fleet
   end
 end
