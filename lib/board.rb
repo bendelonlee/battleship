@@ -5,7 +5,6 @@ class Board
   OPPOSITE = {x: :y, y: :x}
 
   attr_reader :ships, :width, :height
-  attr_accessor :guesses
 
   def initialize(width, height)
     @width = width
@@ -20,6 +19,10 @@ class Board
     @ships << Ship.new(coords)
   end
 
+  def add_guess(coord)
+    @guesses << Guess.new(coord) unless any_guess_at_coord?(coord)
+  end
+
   #query_methods
 
   def get_possible_end_coords(start_coord, ship_size)
@@ -30,6 +33,10 @@ class Board
 
   def all_sunk?
     @ships.all?{|ship| ship.sunk?}
+  end
+
+  def any_guess_at_coord?(coord)
+    @guesses.any?{|g| g.coord == coord}
   end
 
   private

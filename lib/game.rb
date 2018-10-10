@@ -48,7 +48,7 @@ class Game
       binding.pry
     else
       coord = convert(strike)
-      @enemy_fleet.guesses << Guess.new(@enemy_fleet, coord)
+      @enemy_fleet.add_guess(coord)
     end
   end
 
