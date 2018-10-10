@@ -4,7 +4,7 @@ class Board
 
   OPPOSITE = {x: :y, y: :x}
 
-  attr_reader :ships, :width, :height
+  attr_reader :ships, :width, :height, :guesses
 
   def initialize(width, height)
     @width = width
@@ -20,7 +20,7 @@ class Board
   end
 
   def add_guess(coord)
-    @guesses << Guess.new(coord) unless any_guess_at_coord?(coord)
+    @guesses << Guess.new(self, coord) unless any_guess_at_coord?(coord)
   end
 
   #query_methods
