@@ -51,7 +51,7 @@ class Printer
   def add_ships(ships)
     ships.each_with_index do |ship, i|
       (ship.coords.length).times do |s|
-        @print_array[ship.coords[s][:y] + 2][(ship.coords[s][:x] + 1) * 2] = (i + 1).to_s
+        @print_array[ship.coords[s][:y] + 1][(ship.coords[s][:x]) * 2] = (i + 1).to_s
       end
     end
   end
@@ -63,7 +63,7 @@ class Printer
       else
         mark = "O"
       end
-      @print_array[guess.coord[:y] + 2][(guess.coord[:x] + 1) * 2] = mark
+      @print_array[guess.coord[:y] + 1][(guess.coord[:x]) * 2] = mark
     end
   end
 
