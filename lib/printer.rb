@@ -1,7 +1,10 @@
 class Printer
+  def initialize(width, height)
+    @board_x = width
+    @board_y = height
+  end
+
   def print_board(board, show_ships = true)
-    @board_x = board.width
-    @board_y = board.height
     create_board
     add_ships(board.ships) if show_ships
     ### print them differently if the ship is sunk
@@ -50,7 +53,7 @@ class Printer
 
   def add_ships(ships)
     ships.each_with_index do |ship, i|
-      (ship.coords.length).times do |s|
+      ship.coords.length.times do |s|
         @print_array[ship.coords[s][:y] + 1][(ship.coords[s][:x]) * 2] = (i + 1).to_s
       end
     end
@@ -60,6 +63,9 @@ class Printer
     guesses.each do |guess|
       if guess.hit == true
         mark = "X"
+        if guess.sunk == true
+          mark = "S"
+        end
       else
         mark = "O"
       end

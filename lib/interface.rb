@@ -18,9 +18,13 @@ class Interface
 
       case user_input
       when "p"
+        start_time = Time.now
         game = Game.new(@options)
         game.play
-        #add clock
+        end_time = Time.now
+        total_time = (end_time - start_time).to_i
+        puts "This game took #{total_time / 60} minutes and #{total_time % 60} seconds."
+        puts "========================================"
       when "i"
         instructions
       when "o"

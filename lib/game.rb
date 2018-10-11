@@ -7,7 +7,7 @@ class Game
   def initialize(options)
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
-    @printer = Printer.new
+    @printer = Printer.new(options[:board_width], options[:board_height])
     @options = options
   end
 
@@ -28,7 +28,7 @@ class Game
       total_shots % 2 == 0 ? player_round : enemy_round
       total_shots += 1
       if game_over?
-        winner_message
+        total_shots % 2 == 0 ? winner_message("enemy") : winner_message("player")
       end
     end
   end
@@ -61,7 +61,7 @@ class Game
     puts "Enter coordinate of next strike (Ex. A3)"
     print "> "
     strike = $stdin.gets.chomp
-    if strike == "board"
+    if strike == "board" ##remove this eventually
       @printer.print_board(@enemy_fleet)
       binding.pry
     else
@@ -69,9 +69,10 @@ class Game
       sunk_ships_before = @enemy_fleet.ships.count { |ship| ship.sunk? }
       @enemy_fleet.add_guess(coord)
       sunk_ships_after = @enemy_fleet.ships.count { |ship| ship.sunk? }
-      @enemy_fleet.guesses.last.hit ? (print "HIT!!!\n") : (print "Miss!\n")
+      print_enemy
+      @enemy_fleet.guesses.last.hit ? (print "You hit a ship!!!\n\n") : (print "You missed!\n\n")
       if sunk_ships_before != sunk_ships_after
-        puts "You sunk a ship!"
+        puts "You sunk a ship!\n\n\n"
       end
       # add hit/miss dialog; add if it sinks a ship
     end
@@ -79,12 +80,12 @@ class Game
 
   def print_enemy
     @printer.print_board(@enemy_fleet, false)
-    puts "Enemy fleet", ""
+    puts "Enemy fleet"
   end
 
   def print_player
     @printer.print_board(@player_fleet)
-    puts "Player fleet", ""
+    puts "Player fleet"
   end
 
   def enemy_round
@@ -96,10 +97,11 @@ class Game
     sunk_ships_after = @player_fleet.ships.count { |ship| ship.sunk? }
     print_player
     print "The enemy shot at #{c_to_n(coord)}. "
-    @player_fleet.guesses.last.hit ? (print "HIT!!!\n") : (print "Miss!\n")
+    @player_fleet.guesses.last.hit ? (print "The enemy hit your ship!!!\n\n") : (print "The enemy missed!\n\n")
     if sunk_ships_before != sunk_ships_after
-      puts "The enemy sunk your ship!"
+      puts "The enemy sunk your ship!\n\n\n"
     end
+    puts "========================================="
     # add hit/miss dialong along with computer shot location; add if it sinks a ship
   end
 
@@ -120,6 +122,7 @@ class Game
     end
     puts "Ship placement complete:"
     print_player
+    print "\n\n"
   end
 
   def n_to_c(raw)

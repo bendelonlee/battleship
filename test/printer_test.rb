@@ -6,34 +6,27 @@ require './lib/board.rb'
 ### Update to run with  board class
 
 class PrinterTest < Minitest::Test
+  def setup
+    @board = Board.new(2, 2)
+    @printer = Printer.new(2, 2)
+  end
+
   def test_it_exists
-    printer = Printer.new(5, 5)
-    printer2 = Printer.new(10, 6)
-    assert_instance_of Printer, printer
-    assert_instance_of Printer, printer2
+    assert_instance_of Printer, @printer
   end
 
   def test_it_creates_blank_board_array
-    printer = Printer.new(1, 2)
-    blank_board = [[" ", " ", " "], [" ", " ", " "],
-                  [" ", " ", " "], [" ", " ", " "],
-                  [" ", " ", " "]]
-    assert_equal blank_board, printer.create_blank_board
+    blank_board = [["=", "=", "=", "=", "="],
+                    [".", " ", "1", " ", "2"],
+                    ["A", " ", "~", " ", "~"],
+                    ["B", " ", "~", " ", "~"],
+                    ["=", "=", "=", "=", "="]]
+    new_board = @printer.create_board
+    assert_equal blank_board, new_board
   end
 
-  def test_it_responds_to_create_board
-    printer = Printer.new(10, 6)
-    assert printer.respond_to?(:create_board)
-  end
-
-  def test_it_creates_blank_board
-    printer = Printer.new(1, 2)
-    blank_board = [["=", "=", "="],
-                    [".", " ", "1"],
-                    ["A", " ", "~"],
-                    ["B", " ", "~"],
-                    ["=", "=", "="]]
-    assert_equal blank_board, printer.create_board
+  def test_it_can_add_ships
+    ship_1 = Ship.new([{x: 1, y: 1}, {x: 2, y: 1}])
   end
 
 end
