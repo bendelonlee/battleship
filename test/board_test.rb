@@ -19,11 +19,11 @@ class BoardTest < Minitest::Test
     @board.add_ship(coords[0], coords[1])
   end
 
+  def test_get_possible_end_coords_returns_empty_arr
+    assert_equal [], @board.get_possible_end_coords({x:1,y:1}, 7)
+    assert_equal [], @board.get_possible_end_coords({x:0,y:1}, 2)
 
-  # public tests
-  # def test_get_possible_end_coords_returns_empty_arr
-  #   assert_equal [], @board.get_possible_end_coords({x:1,y:1}, 7)
-  # end
+  end
 
   def test_get_possible_end_coords
     help_add_ship2

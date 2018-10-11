@@ -26,7 +26,13 @@ class Board
 
   #query_methods
 
+  def valid_start?(coord, ship_len)
+    return false unless space_open?(coord)
+    get_possible_end_coords(coord, ship_len).any?
+  end
+
   def get_possible_end_coords(start_c, ship_len)
+    return [] unless CoordMath.coord_in_board?(self, start_c)
     CoordMath.get_end_coords_in_board(self, start_c, ship_len).select do |end_c|
       space_for_ship?(CoordMath.get_conseq_coords(start_c, end_c))
     end
