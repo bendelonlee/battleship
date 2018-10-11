@@ -125,6 +125,10 @@ class Game
     print "\n\n"
   end
 
+  def is_letter_and_number?(str)
+    str.size == 2 && str[/\d/] && str[/\w/]
+  end
+
   def n_to_c(raw)
     letter = raw[0].upcase
     x_val = raw[1..-1].to_i
