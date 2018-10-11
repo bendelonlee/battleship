@@ -9,12 +9,12 @@ class BoardTest < Minitest::Test
     @board = Board.new(6, 6)
   end
 
-  def help_add_ship1
+  def help_add_ship1513
     @coords = [{x:1, y:5},{x:1, y:3}]
     @board.add_ship(@coords[0], @coords[1])
   end
 
-  def help_add_ship2
+  def help_add_ship3531
     coords = [{x:3, y:5},{x:3, y:1}]
     @board.add_ship(coords[0], coords[1])
   end
@@ -22,11 +22,21 @@ class BoardTest < Minitest::Test
   def test_get_possible_end_coords_returns_empty_arr
     assert_equal [], @board.get_possible_end_coords({x:1,y:1}, 7)
     assert_equal [], @board.get_possible_end_coords({x:0,y:1}, 2)
+  end
+
+  def test_valid_start
+    ship_len = 2
+    assert  @board.valid_start?({x:2,y:4}, ship_len)
+    refute  @board.valid_start?({x:2,y:0}, ship_len)
+    refute  @board.valid_start?({x:9,y:2}, ship_len)
+    help_add_ship1513
+    refute @board.valid_start?({x:1,y:5}, ship_len)
+
 
   end
 
   def test_get_possible_end_coords
-    help_add_ship2
+    help_add_ship3531
     actual = @board.get_possible_end_coords({x:4, y:4}, 3)
     expected = [{x:6, y:4}, {y:6, x:4}, {y:2, x:4}]
     assert_equal expected, actual
@@ -35,13 +45,13 @@ class BoardTest < Minitest::Test
   end
 
   def test_it_adds_ship
-    help_add_ship1
+    help_add_ship1513
     expected = [{x:1, y:3}, {x:1, y:4}, {x:1, y:5}]
     assert_equal expected, @board.ships[0].coords
   end
 
   def test_space_for_ship?
-    help_add_ship1
+    help_add_ship1513
     assert @board.send(:space_for_ship?,[{x:1, y:2},{x:2, y:2}])
     refute @board.send(:space_for_ship?,[{x:1, y:3},{x:1, y:2}])
   end
