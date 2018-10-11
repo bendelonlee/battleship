@@ -4,7 +4,8 @@ require './lib/guess.rb'
 require 'pry'
 
 class Game
-  def initialize(options)
+  def initialize(options = nil)
+    return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
@@ -125,8 +126,8 @@ class Game
     print "\n\n"
   end
 
-  def is_letter_and_number?(str)
-    str.size == 2 && str[/\d/] && str[/\w/]
+  def is_letter_number?(str)
+    str.size.between?(1,4) && str[/^\w/] && str[/\d$/] ? true : false
   end
 
   def n_to_c(raw)
