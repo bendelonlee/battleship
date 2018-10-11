@@ -1,8 +1,11 @@
 require './lib/ship'
 require 'pry'
+require './lib/coord_math'
 class Board
 
-  attr_reader :ships, :width, :height
+  OPPOSITE = {x: :y, y: :x}
+
+  attr_reader :ships, :width, :height, :guesses
 
   def initialize(width, height)
     @width = width
@@ -13,7 +16,7 @@ class Board
 
   #command_methods
   def add_ship(start_coord, end_coord)
-    coords = get_conseq_coords(start_coord, end_coord)
+    coords = CoordMath.get_conseq_coords(start_coord, end_coord)
     @ships << Ship.new(coords)
   end
 
@@ -23,9 +26,9 @@ class Board
 
   #query_methods
 
-  def get_possible_end_coords(start_coord, ship_size)
-    get_end_coords_in_board(start_coord, ship_size).select do |end_coord|
-      space_for_ship?(get_conseq_coords(start_coord, end_coord))
+  def get_possible_end_coords(start_c, ship_len)
+    CoordMath.get_end_coords_in_board(self, start_c, ship_len).select do |end_c|
+      space_for_ship?(CoordMath.get_conseq_coords(start_c, end_c))
     end
   end
 
@@ -36,6 +39,17 @@ class Board
   def any_guess_at_coord?(coord)
     @guesses.any?{|g| g.coord == coord}
   end
-  
+
+  private
+
+  def space_for_ship?(coords)
+    coords.all?{ |c| space_open?(c)}
+  end
+
+
+
+  def space_open?(coord)
+    @ships.none?{|s| s.coords.include?(coord)}
+  end
 
 end
