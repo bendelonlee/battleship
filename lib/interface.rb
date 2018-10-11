@@ -4,7 +4,7 @@ class Interface
   def initialize
     @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: false }
     puts "========================================="
-    puts "Welcome to the Battleship showdown!"
+    puts "   Welcome to the Battleship showdown!"
     puts "========================================="
     interface_loop
   end
@@ -18,7 +18,13 @@ class Interface
 
       case user_input
       when "p"
-        Game.new(@options)
+        start_time = Time.now
+        game = Game.new(@options)
+        game.play
+        end_time = Time.now
+        total_time = (end_time - start_time).to_i
+        puts "This game took #{total_time / 60} minutes and #{total_time % 60} seconds."
+        puts "========================================"
       when "i"
         instructions
       when "o"

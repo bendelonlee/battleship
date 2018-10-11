@@ -5,78 +5,110 @@ require 'pry'
 
 class Game
   def initialize(options)
-    start_time = Time.now
+    @player_fleet = Board.new(options[:board_width], options[:board_height])
+    @enemy_fleet = Board.new(options[:board_width], options[:board_height])
+    @printer = Printer.new(options[:board_width], options[:board_height])
+    @options = options
+  end
 
-    board_width = options[:board_width]
-    board_height = options[:board_height]
-    ship_lengths = options[:ships]
-    # a_i = options[:a_i]
+  def play
+    place_ships
+    playing_loop
+  end
 
-    @player_fleet = Board.new(board_width, board_height)
-    @enemy_fleet = Board.new(board_width, board_height)
-
-    @printer = Printer.new
-
+  def place_ships
+    ship_lengths = @options[:ships]
     place_computer_ships(ship_lengths)
     place_player_ships(ship_lengths)
-
-    playing_loop
-
-    end_time = Time.now
-    total_seconds = end_time - start_time
-    puts "The game took #{total_seconds / 60} minutes, #{total_seconds % 60} seconds."
   end
 
   def playing_loop
-    loop do
-      player_round
-      if @enemy_fleet.all_sunk?
-        @printer.print_board(@enemy_fleet, false)
-        puts "You have defeated the enemy!!!"
-        puts "It took you #{@enemy_fleet.guesses.count} shots."
-        break
+    total_shots = 0
+    until game_over?
+      total_shots % 2 == 0 ? player_round : enemy_round
+      total_shots += 1
+      if game_over?
+        total_shots % 2 == 0 ? winner_message("enemy") : winner_message("player")
       end
-      enemy_round
-      if @player_fleet.all_sunk?
-        @printer.print_board(@player_fleet)
-        puts "The enemy has defeated your fleet!"
-        puts "It took them #{@enemy_fleet.guesses.count} shots."
-        break
-      end
+    end
+  end
+
+  def game_over?
+    if @enemy_fleet.all_sunk?
+      winner_message("player")
+      return true
+    elsif @player_fleet.all_sunk?
+      winner_message("enemy")
+      return true
+    end
+    false
+  end
+
+  def winner_message(winner)
+    if winner == "player"
+      print_enemy
+      puts "You have defeated the enemy!!!"
+      puts "It took you #{@enemy_fleet.guesses.count} shots to find glory!"
+    else
+      print_player
+      puts "The enemy has defeated your fleet!"
+      puts "It took them #{@enemy_fleet.guesses.count} shots to murder your fleet."
     end
   end
 
   def player_round
-    @printer.print_board(@enemy_fleet, false)
+    print_enemy
     puts "Enter coordinate of next strike (Ex. A3)"
     print "> "
     strike = $stdin.gets.chomp
-    if strike == 'pry'
-      binding.pry
-    end
-    if strike == "board"
+    if strike == "board" ##remove this eventually
       @printer.print_board(@enemy_fleet)
       binding.pry
     else
-      coord = convert(strike)
+      coord = n_to_c(strike)
+      sunk_ships_before = @enemy_fleet.ships.count { |ship| ship.sunk? }
       @enemy_fleet.add_guess(coord)
+      sunk_ships_after = @enemy_fleet.ships.count { |ship| ship.sunk? }
+      print_enemy
+      @enemy_fleet.guesses.last.hit ? (print "You hit a ship!!!\n\n") : (print "You missed!\n\n")
+      if sunk_ships_before != sunk_ships_after
+        puts "You sunk a ship!\n\n\n"
+      end
       # add hit/miss dialog; add if it sinks a ship
     end
+  end
+
+  def print_enemy
+    @printer.print_board(@enemy_fleet, false)
+    puts "Enemy fleet"
+  end
+
+  def print_player
+    @printer.print_board(@player_fleet)
+    puts "Player fleet"
   end
 
   def enemy_round
     x_coord = rand(@player_fleet.width) + 1
     y_coord = rand(@player_fleet.height) + 1
     coord = {x: x_coord, y: y_coord}
+    sunk_ships_before = @player_fleet.ships.count { |ship| ship.sunk? }
     @player_fleet.guesses << Guess.new(@player_fleet, coord)
-    @printer.print_board(@player_fleet)
+    sunk_ships_after = @player_fleet.ships.count { |ship| ship.sunk? }
+    print_player
+    print "The enemy shot at #{c_to_n(coord)}. "
+    @player_fleet.guesses.last.hit ? (print "The enemy hit your ship!!!\n\n") : (print "The enemy missed!\n\n")
+    if sunk_ships_before != sunk_ships_after
+      puts "The enemy sunk your ship!\n\n\n"
+    end
+    puts "========================================="
     # add hit/miss dialong along with computer shot location; add if it sinks a ship
   end
 
   def place_player_ships(ship_lengths)
     # quick instuction
     ship_lengths.each do |len|
-      @printer.print_board(@player_fleet)
+      print_player
       puts "Time to place a #{len} unit long ship"
       puts "Enter start coordinate (Ex. A3)"
       print "> "
@@ -84,20 +116,28 @@ class Game
       puts "Enter end coordinate (Ex. A5)"
       print "> "
       end_raw = $stdin.gets.chomp
-      start_coord = convert(start_raw)
-      end_coord = convert(end_raw)
+      start_coord = n_to_c(start_raw)
+      end_coord = n_to_c(end_raw)
       @player_fleet.add_ship(start_coord, end_coord)
     end
     puts "Ship placement complete:"
-    @printer.print_board(@player_fleet)
+    print_player
+    print "\n\n"
   end
 
-  def convert(raw)
+  def n_to_c(raw)
     letter = raw[0].upcase
     x_val = raw[1..-1].to_i
     alpha_hash = ("A".."Z").zip(1..26).to_h
     y_val = alpha_hash[letter]
     { x: x_val, y: y_val }
+  end
+
+  def c_to_n(coord)
+    alpha_hash = (1..26).zip("A".."Z").to_h
+    letter = alpha_hash[coord[:y]]
+    number = coord[:x].to_s
+    letter + number
   end
 
   def place_computer_ships(ship_lengths)
@@ -112,17 +152,18 @@ class Game
     end
   end
 
-  def print_board(person)
-    if person == "Player 1"
-      puts "Your game board", ""
-      @printer_player.print_board
-    elsif person == "Computer"
-      puts "Enemy game board", ""
-      @printer_comp.print_board
-    else
-      puts "Invalid printer"
-    end
-  end
+  #### delete if no errors after some tests
+  # def print_board(person)
+  #   if person == "Player 1"
+  #     puts "Your game board", ""
+  #     @printer_player.print_board
+  #   elsif person == "Computer"
+  #     puts "Enemy game board", ""
+  #     @printer_comp.print_board
+  #   else
+  #     puts "Invalid printer"
+  #   end
+  # end
 
   def pf
     @player_fleet
