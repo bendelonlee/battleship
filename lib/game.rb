@@ -4,7 +4,8 @@ require './lib/guess.rb'
 require 'pry'
 
 class Game
-  def initialize(options)
+  def initialize(options = nil)
+    return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
@@ -58,24 +59,25 @@ class Game
 
   def player_round
     print_enemy
-    puts "Enter coordinate of next strike (Ex. A3)"
-    print "> "
-    strike = $stdin.gets.chomp
-    if strike == "board" ##remove this eventually
-      @printer.print_board(@enemy_fleet)
-      binding.pry
-    else
-      coord = n_to_c(strike)
-      sunk_ships_before = @enemy_fleet.ships.count { |ship| ship.sunk? }
-      @enemy_fleet.add_guess(coord)
-      sunk_ships_after = @enemy_fleet.ships.count { |ship| ship.sunk? }
-      print_enemy
-      @enemy_fleet.guesses.last.hit ? (print "You hit a ship!!!\n\n") : (print "You missed!\n\n")
-      if sunk_ships_before != sunk_ships_after
-        puts "You sunk a ship!\n\n\n"
-      end
-      # add hit/miss dialog; add if it sinks a ship
+    coord = get_guess_coord
+    sunk_ships_before = @enemy_fleet.ships.count { |ship| ship.sunk? }
+    @enemy_fleet.add_guess(coord)
+    sunk_ships_after = @enemy_fleet.ships.count { |ship| ship.sunk? }
+    print_enemy
+    @enemy_fleet.guesses.last.hit ? (print "You hit a ship!!!\n\n") : (print "You missed!\n\n")
+    if sunk_ships_before != sunk_ships_after
+      puts "You sunk a ship!\n\n\n"
     end
+  end
+
+  def get_guess_coord
+    coord = get_coord("Enter coordinate of next strike (Ex. A3)")
+    return coord if unguessed?(@enemy_fleet, coord)
+    get_guess_coord
+  end
+
+  def unguessed?(board, coord)
+    board.guesses.none?{|g| g.coord == coord}
   end
 
   def print_enemy
@@ -106,23 +108,55 @@ class Game
   end
 
   def place_player_ships(ship_lengths)
-    # quick instuction
     ship_lengths.each do |len|
+      start_coord = get_valid_start_coord(@player_fleet, len)
       print_player
-      puts "Time to place a #{len} unit long ship"
-      puts "Enter start coordinate (Ex. A3)"
-      print "> "
-      start_raw = $stdin.gets.chomp
-      puts "Enter end coordinate (Ex. A5)"
-      print "> "
-      end_raw = $stdin.gets.chomp
-      start_coord = n_to_c(start_raw)
-      end_coord = n_to_c(end_raw)
+      end_coord = get_valid_end_coord(@player_fleet, start_coord, len)
       @player_fleet.add_ship(start_coord, end_coord)
     end
     puts "Ship placement complete:"
     print_player
     print "\n\n"
+  end
+
+  def get_valid_start_coord(board, ship_len)
+    puts "Time to place a #{ship_len} unit long ship"
+    puts "Enter start coordinate (Ex. A3)"
+    start_coord = get_coord
+    return start_coord if board.valid_start?(start_coord, ship_len)
+    puts "Invalid coordinate."
+    get_valid_start_coord(board, ship_len)
+  end
+
+  def get_valid_end_coord(board, start_coord, ship_len)
+    possible_coords = board.get_possible_end_coords(start_coord, ship_len)
+    puts "Enter end coordinate. Options:"
+    puts coords_to_s(possible_coords)
+    end_coord = get_coord
+    if possible_coords.include?(end_coord)
+      return end_coord
+    end
+    puts "Invalid coordinate. Ship must be in an orthogonal line #{ship_len} units long."
+    get_valid_end_coord(board, start_coord, ship_len)
+  end
+
+  def coords_to_s(arr_of_coords)
+    arr_of_coords.map{|c|c_to_n(c)}.join(", ")
+  end
+
+  def get_coord(ask = nil)
+    puts ask if ask
+    print "> "; str = gets.chomp
+    if is_letter_number?(str)
+      return n_to_c(str)
+    else
+      puts "Invalid input."
+      get_coord
+    end
+  end
+
+  def is_letter_number?(str)
+    str.size.between?(2,3) && str[/^\w\d{1,2}/] ? true : false
   end
 
   def n_to_c(raw)
