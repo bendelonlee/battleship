@@ -2,7 +2,8 @@ require './lib/game.rb'
 
 class Interface
   def initialize
-    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: false }
+    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: false,
+                time_delay: 0, player_1: :person1, player_2: :person2} #:person2, :computer1
     puts "========================================="
     puts "   Welcome to the Battleship showdown!"
     puts "========================================="
@@ -23,7 +24,7 @@ class Interface
         game.play
         end_time = Time.now
         total_time = (end_time - start_time).to_i
-        puts "This game took #{total_time / 60} minutes and #{total_time % 60} seconds."
+        puts "This game took #{total_time / 60} minutes and #{((end_time - start_time) % 60).round(4)} seconds."
         puts "========================================"
       when "i"
         instructions
