@@ -1,3 +1,4 @@
+require "./test/test_helper"
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/printer.rb'
@@ -25,8 +26,6 @@ class PrinterTest < Minitest::Test
     assert_equal blank_board, new_board
   end
 
-  def test_it_can_add_ships
-    ship_1 = Ship.new([{x: 1, y: 1}, {x: 2, y: 1}])
-  end
+
 
 end

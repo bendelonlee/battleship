@@ -20,4 +20,8 @@ class GameTest < Minitest::Test
     #should write
   end
 
+  def test_it_can_be_played
+    
+  end
+
 end

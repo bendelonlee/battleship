@@ -1,11 +1,8 @@
 class CoordMath < Hash
   OPPOSITE = {x: :y, y: :x}
+  ALPHA_HASH = ("A".."Z").zip(1..26).to_h
 
   class <<self
-
-    # def get_neighbors(coord)
-    #   get_4_coords(coord, 1)
-    # end
 
     def get_4_coords(start_coord, dist)
       start_coord.map { |k,v|
@@ -29,7 +26,6 @@ class CoordMath < Hash
       line_val = start_coord[x_or_y]
       get_range_from_coords(coords, OPPOSITE[x_or_y]).each do |i|
         result << {x_or_y => line_val, OPPOSITE[x_or_y] => i}
-        # require 'pry'; binding.pry
       end
       result
     end
@@ -52,12 +48,27 @@ class CoordMath < Hash
       coord[:x].between?(1, board.width) && coord[:y].between?(1, board.height)
     end
 
-    def space_for_ship?(coords)
-      coords.all?{ |c| space_open?(c)}
+    def coords_to_s(arr_of_coords)
+      arr_of_coords.map{|c|xy_to_alpha_num(c)}.join(", ")
     end
 
-    def space_open?(coord, ships)
-      ships.none?{|s| s.coords.include?(coord)}
+    def alpha_num_to_xy(raw)
+      letter = raw[0].upcase
+      x_val = raw[1..-1].to_i
+
+      y_val = ALPHA_HASH[letter]
+      { x: x_val, y: y_val }
+    end
+
+    def xy_to_alpha_num(coord)
+      num_to_alpha_hash = ALPHA_HASH.invert
+      letter = num_to_alpha_hash[coord[:y]]
+      number = coord[:x].to_s
+      letter + number
+    end
+
+    def is_alpha_number?(str)
+      str.size.between?(2,3) && str[/^\w\d{1,2}/] ? true : false
     end
 
   end

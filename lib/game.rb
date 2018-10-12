@@ -45,7 +45,7 @@ class Game
     false
   end
 
-  def winner_message(winner)
+  def winner_message(winner)  #change player/enemy to symbols
     if winner == "player"
       print_enemy
       puts "You have defeated the enemy!!!"
@@ -72,7 +72,8 @@ class Game
 
   def get_guess_coord
     coord = get_coord("Enter coordinate of next strike (Ex. A3)")
-    return coord if unguessed?(@enemy_fleet, coord)
+    return coord if unguessed?(@enemy_fleet, coord) \
+            && CoordMath.coord_in_board?(@enemy_fleet, coord)
     get_guess_coord
   end
 
@@ -91,24 +92,23 @@ class Game
   end
 
   def enemy_round
-    x_coord = rand(@player_fleet.width) + 1
-    y_coord = rand(@player_fleet.height) + 1
+    x_coord, y_coord = rand(@player_fleet.width) + 1, rand(@player_fleet.height) + 1
     coord = {x: x_coord, y: y_coord}
     sunk_ships_before = @player_fleet.ships.count { |ship| ship.sunk? }
     @player_fleet.guesses << Guess.new(@player_fleet, coord)
     sunk_ships_after = @player_fleet.ships.count { |ship| ship.sunk? }
     print_player
-    print "The enemy shot at #{c_to_n(coord)}. "
+    print "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
     @player_fleet.guesses.last.hit ? (print "The enemy hit your ship!!!\n\n") : (print "The enemy missed!\n\n")
     if sunk_ships_before != sunk_ships_after
       puts "The enemy sunk your ship!\n\n\n"
     end
-    puts "========================================="
-    # add hit/miss dialong along with computer shot location; add if it sinks a ship
+    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>"
   end
 
   def place_player_ships(ship_lengths)
     ship_lengths.each do |len|
+      print_player
       start_coord = get_valid_start_coord(@player_fleet, len)
       print_player
       end_coord = get_valid_end_coord(@player_fleet, start_coord, len)
@@ -131,7 +131,7 @@ class Game
   def get_valid_end_coord(board, start_coord, ship_len)
     possible_coords = board.get_possible_end_coords(start_coord, ship_len)
     puts "Enter end coordinate. Options:"
-    puts coords_to_s(possible_coords)
+    puts CoordMath.coords_to_s(possible_coords)
     end_coord = get_coord
     if possible_coords.include?(end_coord)
       return end_coord
@@ -140,38 +140,15 @@ class Game
     get_valid_end_coord(board, start_coord, ship_len)
   end
 
-  def coords_to_s(arr_of_coords)
-    arr_of_coords.map{|c|c_to_n(c)}.join(", ")
-  end
-
   def get_coord(ask = nil)
     puts ask if ask
     print "> "; str = gets.chomp
-    if is_letter_number?(str)
-      return n_to_c(str)
+    if CoordMath.is_alpha_number?(str)
+      return CoordMath.alpha_num_to_xy(str)
     else
       puts "Invalid input."
       get_coord
     end
-  end
-
-  def is_letter_number?(str)
-    str.size.between?(2,3) && str[/^\w\d{1,2}/] ? true : false
-  end
-
-  def n_to_c(raw)
-    letter = raw[0].upcase
-    x_val = raw[1..-1].to_i
-    alpha_hash = ("A".."Z").zip(1..26).to_h
-    y_val = alpha_hash[letter]
-    { x: x_val, y: y_val }
-  end
-
-  def c_to_n(coord)
-    alpha_hash = (1..26).zip("A".."Z").to_h
-    letter = alpha_hash[coord[:y]]
-    number = coord[:x].to_s
-    letter + number
   end
 
   def place_computer_ships(ship_lengths)
@@ -186,23 +163,4 @@ class Game
     end
   end
 
-  #### delete if no errors after some tests
-  # def print_board(person)
-  #   if person == "Player 1"
-  #     puts "Your game board", ""
-  #     @printer_player.print_board
-  #   elsif person == "Computer"
-  #     puts "Enemy game board", ""
-  #     @printer_comp.print_board
-  #   else
-  #     puts "Invalid printer"
-  #   end
-  # end
-
-  def pf
-    @player_fleet
-  end
-  def ef
-    @enemy_fleet
-  end
 end

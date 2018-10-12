@@ -52,8 +52,6 @@ class Board
     coords.all?{ |c| space_open?(c)}
   end
 
-
-
   def space_open?(coord)
     @ships.none?{|s| s.coords.include?(coord)}
   end

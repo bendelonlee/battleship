@@ -1,5 +1,5 @@
 class Guess
-  attr_reader :coord, :hit, :sunk
+  attr_reader :coord, :hit, :sunk, :ship
   def initialize(board, coord)
     @coord = coord
     @hit = false
@@ -10,6 +10,7 @@ class Guess
           ship.take_hit
           @hit = true
           @sunk = ship.sunk?
+          @ship = ship
         end
       end
     end
