@@ -51,6 +51,14 @@ class CoordMathTest < Minitest::Test
     refute CoordMath.coord_in_board?(board,{x:1,y:0})
     refute CoordMath.coord_in_board?(board,{x:1,y:-1})
   end
+
+  def test_it_converts_letter_number_to_x_y
+    raw = "A3"
+    raw_2 = "B5"
+    expected_raw = {x: 3, y: 1}
+    expected_raw_2 = {x: 5, y: 2}
+    assert_equal expected_raw, CoordMath.alpha_num_to_xy(raw)
+  end
   #
 
   #
