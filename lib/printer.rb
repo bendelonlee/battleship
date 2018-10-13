@@ -76,7 +76,7 @@ class Printer
 
   def print_board_to_screen
     @print_array.each do |line|
-      print line.join + "\n"
+      Out.put line.join + "\n"
     end
     nil
   end
