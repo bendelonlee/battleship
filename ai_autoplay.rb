@@ -4,7 +4,11 @@ require 'pry'
 options = { board_width: 10, board_height: 10, ships: [5, 4, 3, 2, 2], a_i: true,
             time_delay: 0, player_1: :computer1, player_2: :computer2, output: false}
 
-ai_notes = "If last guess had a hit, guess an adjacent square if not hit already."
+# options = { board_width: 4, board_height: 4, ships: [3, 2], a_i: true,
+#             time_delay: 0, player_1: :computer1, player_2: :computer2, output: false}
+
+ai_notes = "If last guess had a hit, guess an adjacent square if not hit already. Updated error so it can't guess off board guesses."
+ai_notes += "\nIf last two guesses were in line, pick another in-line shot next to the previous shot."
 
 game_data = []
 times_to_run = 1000

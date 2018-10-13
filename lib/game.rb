@@ -12,17 +12,23 @@ class Game
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
-    @options = options
-    @ship_lengths = @options[:ships]
-    @player_1 = @options[:player_1]
-    @player_2 = @options[:player_2]
+    # @options = options
+    @printout = options[:output]
+    @ship_lengths = options[:ships]
+    @player_1 = options[:player_1]
+    @player_2 = options[:player_2]
     @ai = AI.new
     @ai_comp_1 = false
     @ai_comp_2 = options[:a_i]
+    @time_delay = options[:time_delay]
+  end
+
+  def printout?
+    @printout
   end
 
   def delay
-    sleep(@options[:time_delay])
+    sleep(@time_delay)
   end
 
   def play
@@ -48,11 +54,11 @@ class Game
   def game_over?
     if @enemy_fleet.all_sunk?
       @winner_data = {winner: 1, shots: @enemy_fleet.guesses.count}
-      winner_message(:player) if @options[:output] == true
+      winner_message(:player) if printout?
       return true
     elsif @player_fleet.all_sunk?
       @winner_data = {winner: 2, shots: @enemy_fleet.guesses.count}
-      winner_message(:player_2) if @options[:output] == true
+      winner_message(:player_2) if printout?
       return true
     end
     false
@@ -73,17 +79,17 @@ class Game
   def play_round(player)
     if player == :person1 || player == :person2
       player == :person1 ? fleet = @enemy_fleet : fleet = @player_fleet
-      print_board(fleet, false) if @options[:output] == true
+      print_board(fleet, false) if printout?
       coord = get_guess_coord
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
       fleet.add_guess(coord)
       sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
-      print_board(fleet, false) if @options[:output] == true
+      print_board(fleet, false) if printout?
       delay
-      if @options[:output] == true
+      if printout?
         fleet.guesses.last.hit ? (print "Player hit a ship!!!\n\n") : (print "Player missed!\n\n")
       end
-      if sunk_ships_before != sunk_ships_after && @options[:output] == true
+      if sunk_ships_before != sunk_ships_after && printout?
         puts "Player sunk a ship!\n\n\n"
       end
       delay
@@ -96,14 +102,14 @@ class Game
         coord = @ai.get_coord(fleet, @ai_comp_1)
       end
 
-      print_board(fleet, true) if @options[:output] == true
+      print_board(fleet, true) if printout?
       delay
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
       fleet.guesses << Guess.new(fleet, coord)
       sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
-      print_board(fleet, true) if @options[:output] == true
+      print_board(fleet, true) if printout?
       delay
-      if @options[:output] == true
+      if printout?
         print "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
         fleet.guesses.last.hit ? (print "The enemy hit a ship!!!\n\n") : (print "The enemy missed!\n\n")
         if sunk_ships_before != sunk_ships_after
@@ -112,7 +118,7 @@ class Game
       end
       delay
     end
-    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if @options[:output] == true
+    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if printout?
   end
 
   def get_guess_coord
