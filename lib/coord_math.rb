@@ -64,6 +64,9 @@ class CoordMath < Hash
       num_to_alpha_hash = ALPHA_HASH.invert
       letter = num_to_alpha_hash[coord[:y]]
       number = coord[:x].to_s
+      if letter == nil || number == nil
+        binding.pry
+      end
       letter + number
     end
 

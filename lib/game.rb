@@ -1,73 +1,124 @@
 require './lib/board.rb'
 require './lib/printer.rb'
 require './lib/guess.rb'
+require './lib/ai.rb'
 require 'pry'
 
 class Game
+  attr_reader :winner_data
+
   def initialize(options = nil)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
-    @options = options
+    # @options = options
+    @printout = options[:output]
+    @ship_lengths = options[:ships]
+    @player_1 = options[:player_1]
+    @player_2 = options[:player_2]
+    @ai = AI.new
+    @ai_comp_1 = false
+    @ai_comp_2 = options[:a_i]
+    @time_delay = options[:time_delay]
+  end
+
+  def printout?
+    @printout
+  end
+
+  def delay
+    sleep(@time_delay)
   end
 
   def play
-    place_ships
+    place_ships_now
     playing_loop
+    return @winner_data
   end
 
-  def place_ships
-    ship_lengths = @options[:ships]
-    place_computer_ships(ship_lengths)
-    place_player_ships(ship_lengths)
+  def place_ships_now
+    ship_lengths = @ship_lengths
+    place_ships(ship_lengths, @player_1)
+    place_ships(ship_lengths, @player_2)
   end
 
   def playing_loop
     total_shots = 0
     until game_over?
-      total_shots % 2 == 0 ? player_round : enemy_round
+      total_shots % 2 == 0 ? play_round(@player_1) : play_round(@player_2)
       total_shots += 1
-      if game_over?
-        total_shots % 2 == 0 ? winner_message("enemy") : winner_message("player")
-      end
     end
   end
 
   def game_over?
     if @enemy_fleet.all_sunk?
-      winner_message("player")
+      @winner_data = {winner: 1, shots: @enemy_fleet.guesses.count}
+      winner_message(:player) if printout?
       return true
     elsif @player_fleet.all_sunk?
-      winner_message("enemy")
+      @winner_data = {winner: 2, shots: @enemy_fleet.guesses.count}
+      winner_message(:player_2) if printout?
       return true
     end
     false
   end
 
   def winner_message(winner)  #change player/enemy to symbols
-    if winner == "player"
-      print_enemy
-      puts "You have defeated the enemy!!!"
-      puts "It took you #{@enemy_fleet.guesses.count} shots to find glory!"
+    if winner == :player
+      print_board(@enemy_fleet, true)
+      puts "Player 1 has defeated the enemy!!!"
+      puts "It took player 1 #{@enemy_fleet.guesses.count} shots to find glory!"
     else
-      print_player
-      puts "The enemy has defeated your fleet!"
-      puts "It took them #{@enemy_fleet.guesses.count} shots to murder your fleet."
+      print_board(@player_fleet, true)
+      puts "Player 2 has defeated its enemy!"
+      puts "It took player 2 #{@player_fleet.guesses.count} shots to murder the enemy's fleet."
     end
   end
 
-  def player_round
-    print_enemy
-    coord = get_guess_coord
-    sunk_ships_before = @enemy_fleet.ships.count { |ship| ship.sunk? }
-    @enemy_fleet.add_guess(coord)
-    sunk_ships_after = @enemy_fleet.ships.count { |ship| ship.sunk? }
-    print_enemy
-    @enemy_fleet.guesses.last.hit ? (print "You hit a ship!!!\n\n") : (print "You missed!\n\n")
-    if sunk_ships_before != sunk_ships_after
-      puts "You sunk a ship!\n\n\n"
+  def play_round(player)
+    if player == :person1 || player == :person2
+      player == :person1 ? fleet = @enemy_fleet : fleet = @player_fleet
+      print_board(fleet, false) if printout?
+      coord = get_guess_coord
+      sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
+      fleet.add_guess(coord)
+      sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
+      print_board(fleet, false) if printout?
+      delay
+      if printout?
+        fleet.guesses.last.hit ? (print "Player hit a ship!!!\n\n") : (print "Player missed!\n\n")
+      end
+      if sunk_ships_before != sunk_ships_after && printout?
+        puts "Player sunk a ship!\n\n\n"
+      end
+      delay
+    else
+      if player == :computer2
+        fleet = @player_fleet
+        coord = @ai.get_coord(fleet, @ai_comp_2)
+      else
+        fleet = @enemy_fleet
+        coord = @ai.get_coord(fleet, @ai_comp_1)
+      end
+
+      print_board(fleet, true) if printout?
+      delay
+      sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
+      fleet.guesses << Guess.new(fleet, coord)
+      sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
+      print_board(fleet, true) if printout?
+      delay
+      if printout?
+        print "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
+        fleet.guesses.last.hit ? (print "The enemy hit a ship!!!\n\n") : (print "The enemy missed!\n\n")
+        if sunk_ships_before != sunk_ships_after
+          puts "The enemy sunk a ship!\n\n\n"
+        end
+      end
+      delay
     end
+    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if printout?
   end
 
   def get_guess_coord
@@ -81,42 +132,37 @@ class Game
     board.guesses.none?{|g| g.coord == coord}
   end
 
-  def print_enemy
-    @printer.print_board(@enemy_fleet, false)
-    puts "Enemy fleet"
+  def print_board(fleet, print_ships = true)
+    @printer.print_board(fleet, print_ships)
+    fleet == @player_fleet ? player_num = 1 : player_num = 2
+    puts "Player #{player_num} fleet"
   end
 
-  def print_player
-    @printer.print_board(@player_fleet)
-    puts "Player fleet"
-  end
-
-  def enemy_round
-    x_coord, y_coord = rand(@player_fleet.width) + 1, rand(@player_fleet.height) + 1
-    coord = {x: x_coord, y: y_coord}
-    sunk_ships_before = @player_fleet.ships.count { |ship| ship.sunk? }
-    @player_fleet.guesses << Guess.new(@player_fleet, coord)
-    sunk_ships_after = @player_fleet.ships.count { |ship| ship.sunk? }
-    print_player
-    print "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
-    @player_fleet.guesses.last.hit ? (print "The enemy hit your ship!!!\n\n") : (print "The enemy missed!\n\n")
-    if sunk_ships_before != sunk_ships_after
-      puts "The enemy sunk your ship!\n\n\n"
+  def place_ships(ship_lengths, player)
+    if player == :person1 || player == :person2
+      player == :person1 ? fleet = @player_fleet : fleet = @enemy_fleet
+      ship_lengths.each do |len|
+        print_board(fleet, true)
+        start_coord = get_valid_start_coord(fleet, len)
+        print_board(fleet, true)
+        end_coord = get_valid_end_coord(fleet, start_coord, len)
+        fleet.add_ship(start_coord, end_coord)
+      end
+      puts "Ship placement complete:"
+      print_board(fleet, true)
+      print "\n\n"
+    else
+      player == :computer2 ? fleet = @enemy_fleet : fleet = @player_fleet
+        ship_lengths.each do |len|
+          start_coord, end_coord = {}, {}
+          loop do
+            start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
+            end_coord = fleet.get_possible_end_coords(start_coord, len).sample
+            break unless end_coord == nil
+          end
+          fleet.add_ship(start_coord, end_coord)
+        end
     end
-    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>"
-  end
-
-  def place_player_ships(ship_lengths)
-    ship_lengths.each do |len|
-      print_player
-      start_coord = get_valid_start_coord(@player_fleet, len)
-      print_player
-      end_coord = get_valid_end_coord(@player_fleet, start_coord, len)
-      @player_fleet.add_ship(start_coord, end_coord)
-    end
-    puts "Ship placement complete:"
-    print_player
-    print "\n\n"
   end
 
   def get_valid_start_coord(board, ship_len)
@@ -148,18 +194,6 @@ class Game
     else
       puts "Invalid input."
       get_coord
-    end
-  end
-
-  def place_computer_ships(ship_lengths)
-    ship_lengths.each do |len|
-      start_coord, end_coord = {}, {}
-      loop do
-        start_coord = { x: rand(@enemy_fleet.width) + 1, y: rand(@enemy_fleet.height) + 1}
-        end_coord = @enemy_fleet.get_possible_end_coords(start_coord, len).sample
-        break unless end_coord == nil
-      end
-      @enemy_fleet.add_ship(start_coord, end_coord)
     end
   end
 

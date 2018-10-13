@@ -1,0 +1,39 @@
+New trial:
+{:board_width=>10, :board_height=>10, :ships=>[5, 4, 3, 2, 2], :a_i=>false, :time_delay=>0, :player_1=>:computer1, :player_2=>:computer2}
+Ran 1000 games in 10.009171 seconds, average 0.010009171 s
+Computer 1 won 542 times, computer 2 won 458 times
+1	games	73	shots
+1	games	67	shots
+1	games	71	shots
+1	games	74	shots
+1	games	70	shots
+1	games	66	shots
+2	games	76	shots
+2	games	75	shots
+3	games	78	shots
+3	games	72	shots
+4	games	80	shots
+5	games	77	shots
+7	games	81	shots
+12	games	79	shots
+13	games	84	shots
+16	games	82	shots
+21	games	85	shots
+23	games	83	shots
+24	games	100	shots
+31	games	87	shots
+34	games	86	shots
+35	games	89	shots
+40	games	88	shots
+45	games	91	shots
+56	games	90	shots
+65	games	92	shots
+67	games	94	shots
+71	games	93	shots
+72	games	99	shots
+76	games	98	shots
+79	games	97	shots
+92	games	96	shots
+96	games	95	shots
+
+

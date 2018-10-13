@@ -1,0 +1,17 @@
+New trial:
+Ran 10000 games in 6.049632 seconds, average 0.0006049632 s
+Computer 1 won 5929 times, computer 2 won 4071 times
+7	games	5	shots
+17	games	6	shots
+72	games	7	shots
+172	games	8	shots
+345	games	9	shots
+560	games	10	shots
+838	games	11	shots
+977	games	16	shots
+1278	games	12	shots
+1760	games	13	shots
+1904	games	15	shots
+2070	games	14	shots
+
+
