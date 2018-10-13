@@ -9,9 +9,9 @@ class Read
 
     def in
       if @@online_mode == :online
-        http
+        return http
       else
-        gets.chomp
+        return gets.chomp
       end
     end
 

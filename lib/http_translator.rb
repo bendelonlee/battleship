@@ -6,8 +6,9 @@ class HTTPTranslator
   HEADER = "=========================================
            |  Battleship Showdown: Sink or be Sunk!  |
   =========================================".gsub("\n","</p><p>")
-  FONT = '<font face="Courier" color="blue">'
-  MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + FONT + "<p>" + HEADER + "</p><p>"
+  FONT = '<font face="Courier" color="white">'
+  BACKGROUND = '<body style="background-color:navy;">'
+  MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
   @@message = ""
 
   class << self
@@ -21,7 +22,7 @@ class HTTPTranslator
     end
 
     def give_message
-      result = @@message += "</p></font>'"
+      result = @@message += "</p></font></body>'"
       @@message = ""
       result
     end

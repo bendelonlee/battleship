@@ -192,7 +192,7 @@ class Game
     if CoordMath.is_alpha_number?(str)
       return CoordMath.alpha_num_to_xy(str)
     else
-      Out.put_n "Invalid input."
+      Out.put_n "Invalid input '#{str}'."
       get_coord
     end
   end
