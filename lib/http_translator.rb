@@ -6,7 +6,7 @@ class HTTPTranslator
   HEADER = "=========================================
            |  Battleship Showdown: Sink or be Sunk!  |
   =========================================".gsub("\n","</p><p>")
-  FONT = '<font face="Courier" color="blue">This is some text!'
+  FONT = '<font face="Courier" color="blue">'
   MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + FONT + "<p>" + HEADER + "</p><p>"
   @@message = nil
 
