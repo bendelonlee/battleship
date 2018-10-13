@@ -2,7 +2,7 @@ require './lib/game.rb'
 
 class Interface
   def initialize
-    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: true,
+    @options = { board_width: 10, board_height: 4, ships: [5,4,4,3,3,2,2,2], a_i: true,
                 time_delay: 0, player_1: :person1, player_2: :computer2,
               output: true} #:person2, :computer1
     puts "========================================="

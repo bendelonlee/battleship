@@ -1,51 +1,38 @@
 
-
+require 'pry'
 class HTTPTranslator
   attr_reader :output
-  HEADER = "=========================================
-     Battleship Showdown: Sink or be Sunk
-  ========================================="
-  MESSAGE_START = "<html><p>" + HEADER + "</p><p>"
   STATUS = "http/1.1 200 ok"
+  HEADER = "=========================================
+           |  Battleship Showdown: Sink or be Sunk!  |
+  =========================================".gsub("\n","</p><p>")
+  FONT = '<font face="Courier" color="blue">This is some text!'
+  MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + FONT + "<p>" + HEADER + "</p><p>"
+  @@message = nil
 
   class << self
 
     def start_message
-      @message = MESSAGE_START
+      @@message = MESSAGE_START
     end
 
     def add_to_message(string)
-      @message += string.sub("\n","</p><p>")
+      @@message += string.gsub("\n","</p><p>")
     end
 
     def give_message
-      @message += "</p>"
+      result = @@message += "</p></font>'"
+      @@message = nil
+      result
+    end
+
+    def has_message?
+      @@message ? true : false
     end
 
   end
 end
 
-
-
-
-
-
-
-
-
-  def respond
-    accept_request
-    send_response
-    #wait_for_input
-  end
-
-  private
-  def send_response
-    puts "Sending response."
-    response = @status + "\r\n\r\n" + @output + "</html>"
-    @connection.puts response
-    @connection.close
-  end
   #
   # def server_loop
   #   loop do
@@ -57,5 +44,3 @@ end
   #     respond
   #   end
   # end
-
-end
