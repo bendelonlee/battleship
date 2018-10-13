@@ -1,8 +1,10 @@
 require './lib/game.rb'
 require 'pry'
 
-options = { board_width: 10, board_height: 10, ships: [5, 4, 3, 2, 2], a_i: false,
+options = { board_width: 10, board_height: 10, ships: [5, 4, 3, 2, 2], a_i: true,
             time_delay: 0, player_1: :computer1, player_2: :computer2}
+
+ai_notes = "If last guess had a hit, guess an adjacent square if not hit already."
 
 game_data = []
 times_to_run = 1000
@@ -31,10 +33,11 @@ num_shots.each do |shot|
   puts "#{shot[1]}\tgames\t#{shot[0]}\tshots"
 end
 
-text_to_save = "New trial:\n"
+text_to_save = "New trial:\n\nOptions:\n"
 text_to_save += options.to_s
+text_to_save += "\n\nAI NOTES:\n#{ai_notes}\n"
 text_to_save += "\nRan #{times_to_run} games in #{total_time} seconds, average #{total_time / times_to_run} s"
-text_to_save += "\nComputer 1 won #{winner[1].length} times, computer 2 won #{winner[2].length} times"
+text_to_save += "\n\nComputer 1 won #{winner[1].length} times, computer 2 won #{winner[2].length} times\n"
 num_shots.each do |shot|
   text_to_save += "\n#{shot[1]}\tgames\t#{shot[0]}\tshots"
 end

@@ -2,9 +2,9 @@ require './lib/game.rb'
 
 class Interface
   def initialize
-    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: false,
+    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: true,
                 time_delay: 0, player_1: :computer1, player_2: :computer2,
-              outputs: false} #:person2, :computer1
+              output: false} #:person2, :computer1
     puts "========================================="
     puts "   Welcome to the Battleship showdown!"
     puts "========================================="

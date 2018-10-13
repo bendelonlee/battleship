@@ -1,6 +1,7 @@
 require './lib/board.rb'
 require './lib/printer.rb'
 require './lib/guess.rb'
+require './lib/ai.rb'
 require 'pry'
 
 class Game
@@ -15,6 +16,9 @@ class Game
     @ship_lengths = @options[:ships]
     @player_1 = @options[:player_1]
     @player_2 = @options[:player_2]
+    @ai = AI.new
+    @ai_comp_1 = false
+    @ai_comp_2 = options[:a_i]
   end
 
   def delay
@@ -84,12 +88,14 @@ class Game
       end
       delay
     else
-      player == :computer2 ? fleet = @player_fleet : fleet = @enemy_fleet
-      loop do
-        x_coord, y_coord = rand(fleet.width) + 1, rand(fleet.height) + 1
-        coord = {x: x_coord, y: y_coord}
-        break if unguessed?(fleet, coord)
+      if player == :computer2
+        fleet = @player_fleet
+        coord = @ai.get_coord(fleet, @ai_comp_2)
+      else
+        fleet = @enemy_fleet
+        coord = @ai.get_coord(fleet, @ai_comp_1)
       end
+
       print_board(fleet, true) if @options[:output] == true
       delay
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
