@@ -4,6 +4,15 @@ require './lib/board'
 
 class CoordMathTest < Minitest::Test
 
+  def test_is_alpha_number
+    assert CoordMath.is_alpha_number?('A1')
+    assert CoordMath.is_alpha_number?('A99')
+    assert CoordMath.is_alpha_number?('Z90')
+    # refute CoordMath.is_letter_and_number?('A1A1')
+    # needs to be improved for somthing like this
+    refute CoordMath.is_alpha_number?('1A')
+  end
+
   def test_get_4_coords
     actual = CoordMath.get_4_coords({x:1,y:1}, 4)
     expected = [{:x=>5, :y=>1}, {:x=>-3, :y=>1}, {:y=>5, :x=>1}, {:y=>-3, :x=>1}]
