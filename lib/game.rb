@@ -1,4 +1,4 @@
-Read.inrequire './lib/board.rb'
+require './lib/board.rb'
 require './lib/printer.rb'
 require './lib/guess.rb'
 require './lib/ai.rb'

@@ -2,26 +2,28 @@ require 'socket'
 require './lib/http_translator'
 
 class BattleServer
+  @@server = TCPServer.new(9292)
+  @@input = ''
 
   class << self
 
     def send_response_and_return_input
 
-      connection = wait_for_request
-      request_line = accept_request(connection)
-      input = process_request(request_line)
-      #process_request evaluates messages and sends it where it's supposed go
-      deliver_response(connection)
-      close_connection(connection)
-      input
+      2.times do
+        connection = wait_for_request
+        request_line = accept_request(connection)
+        process_request(request_line)
+        #process_request evaluates messages and sends it where it's supposed go
+        deliver_response(connection)
+        close_connection(connection)
+      end
+      @@input
     end
 
 
     def wait_for_request
-      $stdout = STDOUT
       puts "Waiting for Request..."
-      server = TCPServer.new(9292)
-      connection = server.accept
+      connection = @@server.accept
     end
 
     def accept_request(connection)
@@ -37,7 +39,8 @@ class BattleServer
     end
 
     def process_request(request_line)
-      request_line[/(?<=\?)\w+/]
+      input = request_line[/(?<=\?)\w+/]
+      @@input = input if input
     end
 
     def deliver_response(connection)

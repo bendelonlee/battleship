@@ -8,7 +8,7 @@ class HTTPTranslator
   =========================================".gsub("\n","</p><p>")
   FONT = '<font face="Courier" color="blue">'
   MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + FONT + "<p>" + HEADER + "</p><p>"
-  @@message = nil
+  @@message = ""
 
   class << self
 
@@ -22,12 +22,12 @@ class HTTPTranslator
 
     def give_message
       result = @@message += "</p></font>'"
-      @@message = nil
+      @@message = ""
       result
     end
 
     def has_message?
-      @@message ? true : false
+      @@message == ""? false : true
     end
 
   end

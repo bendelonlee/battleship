@@ -1,4 +1,6 @@
-require './lib/game.rb'
+require './lib/game'
+require './lib/read'
+require './lib/out'
 
 class Interface
   def initialize
