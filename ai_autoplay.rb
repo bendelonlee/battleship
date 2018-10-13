@@ -2,7 +2,7 @@ require './lib/game.rb'
 require 'pry'
 
 options = { board_width: 10, board_height: 10, ships: [5, 4, 3, 2, 2], a_i: true,
-            time_delay: 0, player_1: :computer1, player_2: :computer2}
+            time_delay: 0, player_1: :computer1, player_2: :computer2, output: false}
 
 ai_notes = "If last guess had a hit, guess an adjacent square if not hit already."
 
