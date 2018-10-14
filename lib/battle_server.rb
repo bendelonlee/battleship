@@ -3,7 +3,7 @@ require './lib/http_translator'
 
 class BattleServer
   @@server = TCPServer.new(9292)
-  @@input = ''
+  @@input = []
 
   class << self
 
@@ -29,7 +29,10 @@ class BattleServer
     def accept_request(connection)
       puts "Got this request:"
       request_lines = []
-      line = connection.gets.chomp
+      line = connection.gets
+      line = line.chomp if line
+      #added line above because sometimes line is nil
+
       until line.empty?
         request_lines << line
         line = connection.gets.chomp
