@@ -1,0 +1,67 @@
+New trial:
+
+Options:
+{:board_width=>10, :board_height=>10, :ships=>[5, 4, 3, 2, 2], :a_i=>true, :time_delay=>0, :player_1=>:computer1, :player_2=>:computer2, :output=>false}
+
+AI NOTES:
+If last guess had a hit, guess an adjacent square if not hit already. Updated error so it can't guess off board guesses.
+If last two guesses were in line, pick another in-line shot next to the previous shot.
+If last guess missed but previous two hit then pick in-line on opposite side
+
+Ran 1000 games in 9.643354 seconds, average 0.009643354 s
+
+Computer 1 won 289 times, computer 2 won 711 times
+
+1	games	60	shots
+1	games	48	shots
+1	games	46	shots
+1	games	55	shots
+1	games	53	shots
+1	games	57	shots
+1	games	54	shots
+1	games	51	shots
+2	games	62	shots
+3	games	59	shots
+3	games	61	shots
+4	games	64	shots
+4	games	56	shots
+4	games	58	shots
+4	games	69	shots
+5	games	63	shots
+5	games	66	shots
+5	games	65	shots
+7	games	68	shots
+7	games	67	shots
+8	games	70	shots
+9	games	76	shots
+9	games	75	shots
+10	games	71	shots
+11	games	100	shots
+11	games	74	shots
+12	games	72	shots
+13	games	73	shots
+20	games	78	shots
+20	games	99	shots
+20	games	83	shots
+21	games	77	shots
+22	games	81	shots
+23	games	79	shots
+25	games	82	shots
+28	games	80	shots
+30	games	84	shots
+32	games	88	shots
+33	games	85	shots
+37	games	87	shots
+40	games	98	shots
+42	games	92	shots
+43	games	95	shots
+47	games	91	shots
+48	games	89	shots
+51	games	86	shots
+52	games	94	shots
+55	games	90	shots
+55	games	96	shots
+56	games	97	shots
+56	games	93	shots
+
+

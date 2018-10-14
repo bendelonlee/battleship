@@ -58,6 +58,16 @@ class CoordMathTest < Minitest::Test
     expected_raw = {x: 3, y: 1}
     expected_raw_2 = {x: 5, y: 2}
     assert_equal expected_raw, CoordMath.alpha_num_to_xy(raw)
+    assert_equal expected_raw_2, CoordMath.alpha_num_to_xy(raw_2)
+  end
+
+  def test_it_converts_x_y_to_letter_number
+    raw = {x: 3, y: 1}
+    raw_2 = {x: 5, y: 2}
+    expected_raw = "A3"
+    expected_raw_2 = "B5"
+    assert_equal expected_raw, CoordMath.xy_to_alpha_num(raw)
+    assert_equal expected_raw_2, CoordMath.xy_to_alpha_num(raw_2)
   end
   #
 
