@@ -3,10 +3,11 @@ require './lib/read'
 require './lib/out'
 
 class Interface
+  DEFAULT_OPTIONS = { board_width: 10, board_height: 5, ships: [5,4,3,2], a_i: true,
+              time_delay: 0, player_1: :person1, player_2: :computer2,
+            output: true}
   def initialize
-    @options = { board_width: 10, board_height: 5, ships: [5,4,3,2], a_i: true,
-                time_delay: 0, player_1: :person1, player_2: :computer2,
-              output: true} #:person2, :computer1
+    @options =  DEFAULT_OPTIONS
     Out.put_n "========================================="
     Out.put_n "   Welcome to the Battleship showdown!"
     Out.put_n "========================================="
