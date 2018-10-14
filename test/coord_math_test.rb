@@ -10,6 +10,15 @@ class CoordMathTest < Minitest::Test
     assert_equal expected, actual
   end
 
+  def test_is_alpha_number
+    assert CoordMath.is_alpha_number?('A1')
+    assert CoordMath.is_alpha_number?('A99')
+    assert CoordMath.is_alpha_number?('Z90')
+    # refute @game.is_letter_and_number?('A1A1')
+    # needs to be improved for somthing like this
+    refute CoordMath.is_alpha_number?('1A')
+  end
+
   def test_get_conseq_coords
     expected = [{x:1, y:2}, {x:2, y:2}, {x:3, y:2}]
     actual = CoordMath.get_conseq_coords(*[{x:1, y:2}, {x:3, y:2}])
