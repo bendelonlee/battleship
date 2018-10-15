@@ -6,7 +6,7 @@ require 'pry'
 
 class Game
   attr_reader :winner_data
-
+  @@current_game = nil
   def initialize(options = nil)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
@@ -21,6 +21,15 @@ class Game
     @ai_comp_1 = false
     @ai_comp_2 = options[:a_i]
     @time_delay = options[:time_delay]
+    @@current_game = self
+  end
+
+  def self.current_game
+    @@current_game
+  end
+
+  def self.set_current_game(game)
+    @@current_game = game
   end
 
   def printout?
@@ -40,7 +49,7 @@ class Game
   def place_ships_now
     ship_lengths = @ship_lengths
     place_ships(ship_lengths, @player_1)
-    place_ships(ship_lengths, @player_2)
+    place_ships(laship_lengths, @player_2)
   end
 
   def playing_loop
