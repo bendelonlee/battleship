@@ -6,7 +6,7 @@ require 'pry'
 
 class Game
   attr_reader :winner_data
-  @@current_game = nil
+
   def initialize(options = nil)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
@@ -15,6 +15,7 @@ class Game
     # @options = options
     @printout = options[:output]
     @ship_lengths = options[:ships]
+    @unplaced_ship_lengths = @ship_lengths.clone
     @player_1 = options[:player_1]
     @player_2 = options[:player_2]
     @ai = AI.new
@@ -47,9 +48,10 @@ class Game
   end
 
   def place_ships_now
-    ship_lengths = @ship_lengths
-    place_ships(ship_lengths, @player_1)
-    place_ships(laship_lengths, @player_2)
+    place_ships(@player_1)
+    @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
+
+    place_ships(@player_2)
   end
 
   def playing_loop
@@ -133,7 +135,7 @@ class Game
   def get_guess_coord
     coord = get_coord("Enter coordinate of next strike (Ex. A3)")
     return coord if unguessed?(@enemy_fleet, coord) \
-            && CoordMath.coord_in_board?(@enemy_fleet, coord)
+    && CoordMath.coord_in_board?(@enemy_fleet, coord)
     get_guess_coord
   end
 
@@ -148,10 +150,11 @@ class Game
     Out.put_n "Player #{player_num} fleet".red if player_num == 2
   end
 
-  def place_ships(ship_lengths, player)
+  def place_ships(player)
     if player == :person1 || player == :person2
       player == :person1 ? fleet = @player_fleet : fleet = @enemy_fleet
-      ship_lengths.each do |len|
+      until @unplaced_ship_lengths.empty?
+        len = @unplaced_ship_lengths.shift
         print_board(fleet, true)
         start_coord = get_valid_start_coord(fleet, len)
         print_board(fleet, true)
@@ -163,8 +166,8 @@ class Game
       Out.put "\n\n"
     else
       player == :computer2 ? fleet = @enemy_fleet : fleet = @player_fleet
-      ship_lengths.each do |len|
-        start_coord, end_coord = {}, {}
+      until @unplaced_ship_lengths.empty?
+        len = @unplaced_ship_lengths.shift
         loop do
           start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
           end_coord = fleet.get_possible_end_coords(start_coord, len).sample
