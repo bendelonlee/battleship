@@ -5,7 +5,7 @@ require './lib/ai.rb'
 require 'pry'
 
 class Game
-  attr_reader :winner_data
+  attr_reader :winner_data, :temp_start_coord
   attr_accessor :pause_location
 
   def initialize(options = nil)
@@ -25,6 +25,7 @@ class Game
     @time_delay = options[:time_delay]
     @@current_game = self
     @pause_location = nil
+    @temp_start_coord = nil
 
   end
 
@@ -51,6 +52,7 @@ class Game
   end
 
   def place_ships_now(pause_info = nil)
+
     place_ships(@player_2) if @enemy_fleet.ships == []
     @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
     place_ships(@player_1, pause_info)
@@ -155,7 +157,7 @@ class Game
   def place_ships(player, pause_info = nil)
     if player == :person1 || player == :person2
       fleet = player == :person1 ? @player_fleet : @enemy_fleet
-      place_player_ships(fleet, pause_info = nil)
+      place_player_ships(fleet, pause_info)
     else
       fleet = player == :computer2 ? @enemy_fleet : @player_fleet
       place_computer_ships(fleet)
@@ -163,13 +165,18 @@ class Game
   end
 
   def place_player_ships(fleet, pause_info = nil)
+    # binding.pry if pause_info
     until @unplaced_ship_lengths.empty?
       len = @unplaced_ship_lengths.shift
+      unless pause_info
+        print_board(fleet, true)
+        @temp_start_coord = get_valid_start_coord(fleet, len)
+      else
+        @temp_start_coord = pause_info
+      end
       print_board(fleet, true)
-      start_coord = get_valid_start_coord(fleet, len)
-      print_board(fleet, true)
-      end_coord = get_valid_end_coord(fleet, start_coord, len)
-      fleet.add_ship(start_coord, end_coord)
+      end_coord = get_valid_end_coord(fleet, @temp_start_coord, len)
+      fleet.add_ship(@temp_start_coord, end_coord)
     end
     Out.put_n "Ship placement complete:"
     print_board(fleet, true)
