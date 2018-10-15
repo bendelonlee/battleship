@@ -22,6 +22,8 @@ class Storage
 
     end
     def load_game(game_id)
+      game_data = File.open("./data/game_data/#{game_id}.data", 'r')
+      Marshal.load(game_data)
     end
   end
 end

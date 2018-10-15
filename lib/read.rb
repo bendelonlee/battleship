@@ -15,9 +15,24 @@ class Read
     def check_for_commands(input)
       if input == 'pry'
         require 'pry'; binding.pry
-        self.in
+        return resume_playing
+      elsif input == 'save' && Game.current_game
+        Out.put_n "What do you want to call your game?"
+        game_id = self.in
+        Storage.save_game(Game.current_game, game_id)
+        return resume_playing
+      elsif input == 'load'
+        Out.put_n "What is the id or name of the game you want to load?"
+        game_id = self.in
+        loaded_game = Game.set_current_game(Storage.load_game(game_id))
+        loaded_game.playing_loop
       end
       input
+    end
+
+    def resume_playing
+      Out.put_n "Resume playing:"
+      return self.in
     end
 
     def in

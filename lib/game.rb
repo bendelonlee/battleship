@@ -28,6 +28,10 @@ class Game
     @@current_game
   end
 
+  def self.set_current_game(game)
+    @@current_game = game
+  end
+
   def printout?
     @printout
   end
@@ -45,7 +49,7 @@ class Game
   def place_ships_now
     ship_lengths = @ship_lengths
     place_ships(ship_lengths, @player_1)
-    place_ships(ship_lengths, @player_2)
+    place_ships(laship_lengths, @player_2)
   end
 
   def playing_loop
