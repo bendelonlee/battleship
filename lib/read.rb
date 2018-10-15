@@ -24,8 +24,7 @@ class Read
       elsif input == 'load'
         Out.put_n "What is the id or name of the game you want to load?"
         game_id = self.in
-        loaded_game = Game.set_current_game(Storage.load_game(game_id))
-        loaded_game.playing_loop
+        Storage.load_and_run_game(game_id)
       end
       input
     end
@@ -37,6 +36,7 @@ class Read
 
     def in
       unless @@preloaded_input.empty?
+        puts "preloaded input:#{@@preloaded_input[0]}"
         return check_for_commands(@@preloaded_input.shift)
       end
       if @@online_mode == :online

@@ -16,6 +16,7 @@ class Interface
   end
 
   def interface_loop
+
     while true
       Out.put_n "Would you like to (p)lay, read the (i)instructions, change the (o)ptions, or (q)uit?"
       Out.put "> "
@@ -36,14 +37,18 @@ class Interface
       when "o"
         change_options
       when "q"
-        return
+        return # class.quit_interface(nil)
       end
     end
   end
 
+  # def self.quit_interface(return_value)
+  #   return return_value
+  # end
+
   def instructions
-    Out.put_n "===================", "Kill their battleship."
-    Out.put_n "Don't let them kill you.", "==================="
+    Out.put_n "===================\nKill their battleship."
+    Out.put_n "Don't let them kill you.\n==================="
   end
 
   def change_options
@@ -51,7 +56,7 @@ class Interface
     change_y
     change_ships
     change_ai
-    Out.put_n "Options updated", ""
+    Out.put_n "Options updated\n"
   end
 
   def change_x

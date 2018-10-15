@@ -6,6 +6,7 @@ require 'pry'
 
 class Game
   attr_reader :winner_data
+  attr_accessor :pause_location
 
   def initialize(options = nil)
     return unless options
@@ -23,6 +24,8 @@ class Game
     @ai_comp_2 = options[:a_i]
     @time_delay = options[:time_delay]
     @@current_game = self
+    @pause_location = nil
+
   end
 
   def self.current_game
@@ -47,11 +50,10 @@ class Game
     return @winner_data
   end
 
-  def place_ships_now
-    place_ships(@player_1)
+  def place_ships_now(pause_info = nil)
+    place_ships(@player_2) if @enemy_fleet.ships == []
     @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
-
-    place_ships(@player_2)
+    place_ships(@player_1, pause_info)
   end
 
   def playing_loop
@@ -150,31 +152,39 @@ class Game
     Out.put_n "Player #{player_num} fleet".red if player_num == 2
   end
 
-  def place_ships(player)
+  def place_ships(player, pause_info = nil)
     if player == :person1 || player == :person2
-      player == :person1 ? fleet = @player_fleet : fleet = @enemy_fleet
-      until @unplaced_ship_lengths.empty?
-        len = @unplaced_ship_lengths.shift
-        print_board(fleet, true)
-        start_coord = get_valid_start_coord(fleet, len)
-        print_board(fleet, true)
-        end_coord = get_valid_end_coord(fleet, start_coord, len)
-        fleet.add_ship(start_coord, end_coord)
-      end
-      Out.put_n "Ship placement complete:"
-      print_board(fleet, true)
-      Out.put "\n\n"
+      fleet = player == :person1 ? @player_fleet : @enemy_fleet
+      place_player_ships(fleet, pause_info = nil)
     else
-      player == :computer2 ? fleet = @enemy_fleet : fleet = @player_fleet
-      until @unplaced_ship_lengths.empty?
-        len = @unplaced_ship_lengths.shift
-        loop do
-          start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
-          end_coord = fleet.get_possible_end_coords(start_coord, len).sample
-          break unless end_coord == nil
-        end
-        fleet.add_ship(start_coord, end_coord)
+      fleet = player == :computer2 ? @enemy_fleet : @player_fleet
+      place_computer_ships(fleet)
+    end
+  end
+
+  def place_player_ships(fleet, pause_info = nil)
+    until @unplaced_ship_lengths.empty?
+      len = @unplaced_ship_lengths.shift
+      print_board(fleet, true)
+      start_coord = get_valid_start_coord(fleet, len)
+      print_board(fleet, true)
+      end_coord = get_valid_end_coord(fleet, start_coord, len)
+      fleet.add_ship(start_coord, end_coord)
+    end
+    Out.put_n "Ship placement complete:"
+    print_board(fleet, true)
+    Out.put "\n\n"
+  end
+
+  def place_computer_ships(fleet)
+    until @unplaced_ship_lengths.empty?
+      len = @unplaced_ship_lengths.shift
+      while true
+        start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
+        end_coord = fleet.get_possible_end_coords(start_coord, len).sample
+        break unless end_coord == nil
       end
+      fleet.add_ship(start_coord, end_coord)
     end
   end
 

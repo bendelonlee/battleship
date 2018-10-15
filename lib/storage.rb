@@ -13,6 +13,11 @@ class Storage
     def game_ids
     end
     def save_game(game, game_id = nil)
+      if caller[4..7].join[/get_valid_start_coord/]
+        Game.current_game.pause_location = :ship_placement_start_coord
+      elsif caller[4..7].join[/get_valid_start_coord/]
+        Game.current_game.pause_location = :ship_placement_end_coord
+      end
       # return :id_taken if id_taken(game_id)
       #returns game id
 
@@ -25,5 +30,16 @@ class Storage
       game_data = File.open("./data/game_data/#{game_id}.data", 'r')
       Marshal.load(game_data)
     end
+    def load_and_run_game(game_id)
+      loaded_game = Game.set_current_game(Storage.load_game(game_id))
+      if loaded_game.pause_location == :ship_placement_start_coord
+        loaded_game.place_ships_now(:start_at_end_coord)
+      elsif loaded_game.pause_location == :ship_placement_end_coord
+
+      else
+        loaded_game.playing_loop
+      end
+    end
+
   end
 end
