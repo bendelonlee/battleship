@@ -2,7 +2,6 @@ require "./test/test_helper"
 require "./lib/board"
 require 'pry'
 require 'set'
-# require 'pry'; binding.pry
 
 class BoardTest < Minitest::Test
   def setup
@@ -31,8 +30,6 @@ class BoardTest < Minitest::Test
     refute  @board.valid_start?({x:9,y:2}, ship_len)
     help_add_ship1513
     refute @board.valid_start?({x:1,y:5}, ship_len)
-
-
   end
 
   def test_get_possible_end_coords
@@ -56,7 +53,35 @@ class BoardTest < Minitest::Test
     refute @board.send(:space_for_ship?,[{x:1, y:3},{x:1, y:2}])
   end
 
+  def test_it_adds_guesses
+    coord = {x:1, y:3}
+    @board.add_guess(coord)
+    assert_equal coord, @board.guesses.last.coord
+    coord = {x:3, y:5}
+    @board.add_guess(coord)
+    assert_equal coord, @board.guesses.last.coord
+    assert_equal 2, @board.guesses.length
+  end
 
+  def test_it_knows_when_all_ships_sunk
+    coords = [{x:1, y:2},{x:1, y:3}]
+    @board.add_ship(coords[0], coords[1])
+    coords = [{x:3, y:2},{x:3, y:3}]
+    @board.add_ship(coords[0], coords[1])
+    assert_equal false, @board.all_sunk?
+    @board.add_guess({x:1, y:2})
+    @board.add_guess({x:1, y:3})
+    @board.add_guess({x:3, y:2})
+    @board.add_guess({x:3, y:3})
+    assert_equal true, @board.all_sunk?
+  end
+
+  def test_it_knows_if_guess_at_coord
+    coord = {x:1, y:3}
+    assert_equal false, @board.any_guess_at_coord?(coord)
+    @board.add_guess(coord)
+    assert_equal true, @board.any_guess_at_coord?(coord)
+  end
 
 
 end

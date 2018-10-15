@@ -146,7 +146,8 @@ class Game
   def print_board(fleet, print_ships = true)
     @printer.print_board(fleet, print_ships)
     fleet == @player_fleet ? player_num = 1 : player_num = 2
-    Out.put_n "Player #{player_num} fleet"
+    Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
+    Out.put_n "Player #{player_num} fleet".red if player_num == 2
   end
 
   def place_ships(player)

@@ -1,3 +1,4 @@
+require './lib/string'
 require './lib/game'
 require './lib/read'
 require './lib/out'

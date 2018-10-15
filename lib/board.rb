@@ -1,4 +1,5 @@
 require './lib/ship'
+require './lib/guess'
 require 'pry'
 require './lib/coord_math'
 class Board
