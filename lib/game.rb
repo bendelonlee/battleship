@@ -6,7 +6,7 @@ require 'pry'
 
 class Game
   attr_reader :winner_data
-
+  @@current_game = nil
   def initialize(options = nil)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
@@ -21,6 +21,15 @@ class Game
     @ai_comp_1 = false
     @ai_comp_2 = options[:a_i]
     @time_delay = options[:time_delay]
+    @@current_game = self
+  end
+
+  def self.current_game
+    @@current_game
+  end
+
+  def self.set_current_game(game)
+    @@current_game = game
   end
 
   def printout?
@@ -40,7 +49,7 @@ class Game
   def place_ships_now
     ship_lengths = @ship_lengths
     place_ships(ship_lengths, @player_1)
-    place_ships(ship_lengths, @player_2)
+    place_ships(laship_lengths, @player_2)
   end
 
   def playing_loop
@@ -67,12 +76,12 @@ class Game
   def winner_message(winner)  #change player/enemy to symbols
     if winner == :player
       print_board(@enemy_fleet, true)
-      puts "Player 1 has defeated the enemy!!!"
-      puts "It took player 1 #{@enemy_fleet.guesses.count} shots to find glory!"
+      Out.put_n "Player 1 has defeated the enemy!!!"
+      Out.put_n "It took player 1 #{@enemy_fleet.guesses.count} shots to find glory!"
     else
       print_board(@player_fleet, true)
-      puts "Player 2 has defeated its enemy!"
-      puts "It took player 2 #{@player_fleet.guesses.count} shots to murder the enemy's fleet."
+      Out.put_n "Player 2 has defeated its enemy!"
+      Out.put_n "It took player 2 #{@player_fleet.guesses.count} shots to murder the enemy's fleet."
     end
   end
 
@@ -87,10 +96,10 @@ class Game
       print_board(fleet, false) if printout?
       delay
       if printout?
-        fleet.guesses.last.hit ? (print "Player hit a ship!!!\n\n") : (print "Player missed!\n\n")
+        fleet.guesses.last.hit ? (Out.put "Player hit a ship!!!\n\n") : (Out.put "Player missed!\n\n")
       end
       if sunk_ships_before != sunk_ships_after && printout?
-        puts "Player sunk a ship!\n\n\n"
+        Out.put_n "Player sunk a ship!\n\n\n"
       end
       delay
     else
@@ -110,15 +119,15 @@ class Game
       print_board(fleet, true) if printout?
       delay
       if printout?
-        print "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
-        fleet.guesses.last.hit ? (print "The enemy hit a ship!!!\n\n") : (print "The enemy missed!\n\n")
+        Out.put "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
+        fleet.guesses.last.hit ? (Out.put "The enemy hit a ship!!!\n\n") : (Out.put "The enemy missed!\n\n")
         if sunk_ships_before != sunk_ships_after
-          puts "The enemy sunk a ship!\n\n\n"
+          Out.put_n "The enemy sunk a ship!\n\n\n"
         end
       end
       delay
     end
-    puts "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if printout?
+    Out.put_n "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if printout?
   end
 
   def get_guess_coord
@@ -135,8 +144,8 @@ class Game
   def print_board(fleet, print_ships = true)
     @printer.print_board(fleet, print_ships)
     fleet == @player_fleet ? player_num = 1 : player_num = 2
-    puts "Player #{player_num} fleet".yellow if player_num == 1
-    puts "Player #{player_num} fleet".red if player_num == 2
+    Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
+    Out.put_n "Player #{player_num} fleet".red if player_num == 2
   end
 
   def place_ships(ship_lengths, player)
@@ -149,9 +158,9 @@ class Game
         end_coord = get_valid_end_coord(fleet, start_coord, len)
         fleet.add_ship(start_coord, end_coord)
       end
-      puts "Ship placement complete:"
+      Out.put_n "Ship placement complete:"
       print_board(fleet, true)
-      print "\n\n"
+      Out.put "\n\n"
     else
       player == :computer2 ? fleet = @enemy_fleet : fleet = @player_fleet
       ship_lengths.each do |len|
@@ -167,33 +176,33 @@ class Game
   end
 
   def get_valid_start_coord(board, ship_len)
-    puts "Time to place a #{ship_len} unit long ship"
-    puts "Enter start coordinate (Ex. A3)"
+    Out.put_n "Time to place a #{ship_len} unit long ship"
+    Out.put_n "Enter start coordinate (Ex. A3)"
     start_coord = get_coord
     return start_coord if board.valid_start?(start_coord, ship_len)
-    puts "Invalid coordinate."
+    Out.put_n "Invalid coordinate."
     get_valid_start_coord(board, ship_len)
   end
 
   def get_valid_end_coord(board, start_coord, ship_len)
     possible_coords = board.get_possible_end_coords(start_coord, ship_len)
-    puts "Enter end coordinate. Options:"
-    puts CoordMath.coords_to_s(possible_coords)
+    Out.put_n "Enter end coordinate. Options:"
+    Out.put_n CoordMath.coords_to_s(possible_coords)
     end_coord = get_coord
     if possible_coords.include?(end_coord)
       return end_coord
     end
-    puts "Invalid coordinate. Ship must be in an orthogonal line #{ship_len} units long."
+    Out.put_n "Invalid coordinate. Ship must be in an orthogonal line #{ship_len} units long."
     get_valid_end_coord(board, start_coord, ship_len)
   end
 
   def get_coord(ask = nil)
-    puts ask if ask
-    print "> "; str = gets.chomp
+    Out.put_n ask if ask
+    Out.put "> "; str = Read.in
     if CoordMath.is_alpha_number?(str)
       return CoordMath.alpha_num_to_xy(str)
     else
-      puts "Invalid input."
+      Out.put_n "Invalid input '#{str}'."
       get_coord
     end
   end

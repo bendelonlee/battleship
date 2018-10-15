@@ -1,23 +1,26 @@
-require './lib/game.rb'
 require './lib/string'
+require './lib/game'
+require './lib/read'
+require './lib/out'
 
 class Interface
+  DEFAULT_OPTIONS = { board_width: 10, board_height: 5, ships: [5,4,3,2], a_i: true,
+              time_delay: 0, player_1: :person1, player_2: :computer2,
+            output: true}
   def initialize
-    @options = { board_width: 4, board_height: 4, ships: [2, 3], a_i: true,
-                time_delay: 0.5, player_1: :computer1, player_2: :computer2,
-              output: true} #:person2, :computer1
-    puts "========================================="
-    puts "   Welcome to the Battleship showdown!".yellow
-    puts "========================================="
+    @options =  DEFAULT_OPTIONS
+    Out.put_n "========================================="
+    Out.put_n "   Welcome to the Battleship showdown!"
+    Out.put_n "========================================="
     interface_loop
   end
 
   def interface_loop
     while true
-      puts "Would you like to (p)lay, read the (i)instructions, change the (o)ptions, or (q)uit?"
-      print "> "
+      Out.put_n "Would you like to (p)lay, read the (i)instructions, change the (o)ptions, or (q)uit?"
+      Out.put "> "
 
-      user_input = $stdin.gets.chomp
+      user_input = Read.in
 
       case user_input
       when "p"
@@ -26,8 +29,8 @@ class Interface
         game.play
         end_time = Time.now
         total_time = (end_time - start_time).to_i
-        puts "This game took #{total_time / 60} minutes and #{((end_time - start_time) % 60).round(4)} seconds."
-        puts "========================================"
+        Out.put_n "This game took #{total_time / 60} minutes and #{((end_time - start_time) % 60).round(4)} seconds."
+        Out.put_n "========================================"
       when "i"
         instructions
       when "o"
@@ -39,8 +42,8 @@ class Interface
   end
 
   def instructions
-    puts "===================", "Kill their battleship."
-    puts "Don't let them kill you.", "==================="
+    Out.put_n "===================", "Kill their battleship."
+    Out.put_n "Don't let them kill you.", "==================="
   end
 
   def change_options
@@ -48,53 +51,53 @@ class Interface
     change_y
     change_ships
     change_ai
-    puts "Options updated", ""
+    Out.put_n "Options updated", ""
   end
 
   def change_x
-    puts "What size board do you want in X? Valid sizes 4-26"
-    print "> "
-    new_x = $stdin.gets.chomp.to_i
+    Out.put_n "What size board do you want in X? Valid sizes 4-26"
+    Out.put "> "
+    new_x = Read.in.to_i
     if new_x > 26 || new_x < 4
-      puts "Invalid option. Option skipped."
+      Out.put_n "Invalid option. Option skipped."
     else
       @options[:board_width] = new_x
     end
   end
 
   def change_y
-    puts "What size board do you want in Y? Valid sizes 4-26"
-    print "> "
-    new_y = $stdin.gets.chomp.to_i
+    Out.put_n "What size board do you want in Y? Valid sizes 4-26"
+    Out.put "> "
+    new_y = Read.in.to_i
     if new_y > 26 || new_y < 4
-      puts "Invalid option. Option skipped."
+      Out.put_n "Invalid option. Option skipped."
     else
       @options[:board_height] = new_y
     end
   end
 
   def change_ai
-    puts "Do you want AI? (y/n)"
-    a_i = $stdin.gets.chomp
+    Out.put_n "Do you want AI? (y/n)"
+    a_i = Read.in
     if a_i == "y"
       @options[:a_i] = true
     elsif a_i == "n"
       @options[:a_i] = false
     else
-      puts "Invalid option. Option skipped."
+      Out.put_n "Invalid option. Option skipped."
     end
   end
 
   def change_ships
-    puts "Enter lengths of ships one by one. Press (q) when finished"
+    Out.put_n "Enter lengths of ships one by one. Press (q) when finished"
     finished = false
     ship_count = 0
     ships = []
     until finished == true
       ship_count += 1
-      puts "Enter length for ship #{ship_count}"
-      print "> "
-      ship_length = $stdin.gets.chomp.to_i
+      Out.put_n "Enter length for ship #{ship_count}"
+      Out.put "> "
+      ship_length = Read.in.to_i
       if ship_length == 0
         finished = true
       else
