@@ -7,7 +7,6 @@ class Printer
   def print_board(board, show_ships = true)
     create_board
     add_ships(board.ships) if show_ships
-    ### print them differently if the ship is sunk
     add_guesses(board.guesses)
     print_board_to_screen
   end
