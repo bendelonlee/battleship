@@ -144,7 +144,8 @@ class Game
   def print_board(fleet, print_ships = true)
     @printer.print_board(fleet, print_ships)
     fleet == @player_fleet ? player_num = 1 : player_num = 2
-    Out.put_n "Player #{player_num} fleet"
+    Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
+    Out.put_n "Player #{player_num} fleet".red if player_num == 2
   end
 
   def place_ships(ship_lengths, player)
@@ -162,15 +163,15 @@ class Game
       Out.put "\n\n"
     else
       player == :computer2 ? fleet = @enemy_fleet : fleet = @player_fleet
-        ship_lengths.each do |len|
-          start_coord, end_coord = {}, {}
-          loop do
-            start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
-            end_coord = fleet.get_possible_end_coords(start_coord, len).sample
-            break unless end_coord == nil
-          end
-          fleet.add_ship(start_coord, end_coord)
+      ship_lengths.each do |len|
+        start_coord, end_coord = {}, {}
+        loop do
+          start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
+          end_coord = fleet.get_possible_end_coords(start_coord, len).sample
+          break unless end_coord == nil
         end
+        fleet.add_ship(start_coord, end_coord)
+      end
     end
   end
 

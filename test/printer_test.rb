@@ -4,8 +4,6 @@ require 'minitest/pride'
 require './lib/printer.rb'
 require './lib/board.rb'
 
-### Update to run with  board class
-
 class PrinterTest < Minitest::Test
   def setup
     @board = Board.new(2, 2)
@@ -25,7 +23,5 @@ class PrinterTest < Minitest::Test
     new_board = @printer.create_board
     assert_equal blank_board, new_board
   end
-
-
 
 end

@@ -9,9 +9,15 @@ options = { board_width: 10, board_height: 10, ships: [5, 4, 3, 2, 2], a_i: true
 
 ai_notes = "If last guess had a hit, guess an adjacent square if not hit already. Updated error so it can't guess off board guesses."
 ai_notes += "\nIf last two guesses were in line, pick another in-line shot next to the previous shot."
+ai_notes += "\nIf last guess missed but previous two hit then pick in-line on opposite side"
+ai_notes += "\nIf last guess missed but guess before that hit, pick adjacent to that previous hit again"
+ai_notes += "\nIf previous two hits missed but shot before that hit, try another direction from the hit shot coord"
+ai_notes += "\nIf previous shot sunk a ship then try a new random guess"
+ai_notes += "\nIf hit a ship, then missed, then hit after tring again, continue firing in new direction"
+ai_notes += "\nIf it's going in a line but then misses & ship still isn't sunk, fire in other direction"
 
 game_data = []
-times_to_run = 1000
+times_to_run = 25000
 start_time = Time.now
 
 times_to_run.times {
@@ -53,28 +59,3 @@ file_path += "AI:#{options[:a_i].to_s} #{times_to_run}runs"
 file_path += "#{options[:board_width].to_s}x#{options[:board_height].to_s}"
 file_path += ".txt"
 File.open(file_path, 'w') { |file| file.write(text_to_save) }
-
-=begin
-
-GAME DATA
-No computer ai. Only random guesses. No guess twice though.
-Ran 10000 games in 6.025715 seconds, average 0.0006025714999999999 s
-Computer 1 won 5994 times, computer 2 won 4006 times
-4       games   5       shots
-28      games   6       shots
-77      games   7       shots
-129     games   8       shots
-332     games   9       shots
-562     games   10      shots
-859     games   11      shots
-895     games   16      shots
-1321    games   12      shots
-1770    games   13      shots
-1965    games   15      shots
-2058    games   14      shots
-
-
-
-
-
-=end
