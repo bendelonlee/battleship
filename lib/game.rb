@@ -137,7 +137,7 @@ class Game
   end
 
   def get_guess_coord
-    coord = get_coord("Enter coordinate of next strike (Ex. A3)")
+    coord = get_coord_from_user("Enter coordinate of next strike (Ex. A3)")
     return coord if unguessed?(@enemy_fleet, coord) \
     && CoordMath.coord_in_board?(@enemy_fleet, coord)
     get_guess_coord
@@ -166,19 +166,23 @@ class Game
 
   def place_player_ships(fleet, pause_info = nil)
     # binding.pry if pause_info
+
     until @unplaced_ship_lengths.empty?
-      len = @unplaced_ship_lengths.shift
+
       unless pause_info
+        @temp_len = @unplaced_ship_lengths.shift
         print_board(fleet, true)
-        @temp_start_coord = get_valid_start_coord(fleet, len)
+        @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
       else
-        @temp_start_coord = pause_info
+        pause_info = false
       end
       print_board(fleet, true)
-      end_coord = get_valid_end_coord(fleet, @temp_start_coord, len)
+      end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
       fleet.add_ship(@temp_start_coord, end_coord)
     end
     Out.put_n "Ship placement complete:"
+    puts caller
+    binding.pry
     print_board(fleet, true)
     Out.put "\n\n"
   end
@@ -198,7 +202,7 @@ class Game
   def get_valid_start_coord(board, ship_len)
     Out.put_n "Time to place a #{ship_len} unit long ship"
     Out.put_n "Enter start coordinate (Ex. A3)"
-    start_coord = get_coord
+    start_coord = get_coord_from_user
     return start_coord if board.valid_start?(start_coord, ship_len)
     Out.put_n "Invalid coordinate."
     get_valid_start_coord(board, ship_len)
@@ -208,7 +212,7 @@ class Game
     possible_coords = board.get_possible_end_coords(start_coord, ship_len)
     Out.put_n "Enter end coordinate. Options:"
     Out.put_n CoordMath.coords_to_s(possible_coords)
-    end_coord = get_coord
+    end_coord = get_coord_from_user
     if possible_coords.include?(end_coord)
       return end_coord
     end
@@ -216,14 +220,17 @@ class Game
     get_valid_end_coord(board, start_coord, ship_len)
   end
 
-  def get_coord(ask = nil)
+  def get_coord_from_user(ask = nil)
     Out.put_n ask if ask
-    Out.put "> "; str = Read.in
+    Out.put "> "
+    str = Read.in;# return :return_to_server if str == :return_to_server
+    binding.pry if str == 'load'
+
     if CoordMath.is_alpha_number?(str)
       return CoordMath.alpha_num_to_xy(str)
     else
       Out.put_n "Invalid input '#{str}'."
-      get_coord
+      get_coord_from_user
     end
   end
 

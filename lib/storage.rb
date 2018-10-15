@@ -37,7 +37,7 @@ class Storage
       if loaded_game.pause_location == :ship_placement_start_coord
         loaded_game.place_ships_now
       elsif loaded_game.pause_location == :ship_placement_end_coord
-
+        pause_info = true
         loaded_game.place_ships_now(loaded_game.temp_start_coord)
       else
         loaded_game.playing_loop

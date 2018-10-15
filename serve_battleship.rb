@@ -5,7 +5,11 @@ require './lib/read'
 Out.turn_online
 Read.turn_online
 
-Interface.new
+
+interface = Interface.new
+p interface.interface_loop
+require 'pry'; binding.pry
+
 
 
 

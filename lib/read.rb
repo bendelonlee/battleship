@@ -12,18 +12,25 @@ class Read
       @@preloaded_input = arr
     end
 
+    def show_preloaded
+      @@preloaded_input
+    end
+
     def check_for_commands(input)
+      return input if input == :return_to_server
       if input == 'pry'
         require 'pry'; binding.pry
         return resume_playing
       elsif input == 'save' && Game.current_game
         Out.put_n "What do you want to call your game?"
         game_id = self.in
+        return game_id if game_id == :return_to_server
         Storage.save_game(Game.current_game, game_id)
         return resume_playing
       elsif input == 'load'
         Out.put_n "What is the id or name of the game you want to load?"
         game_id = self.in
+        return game_id if game_id == :return_to_server
         Storage.load_and_run_game(game_id)
       end
       input
@@ -50,7 +57,7 @@ class Read
 
 
     def http
-      BattleServer.send_response_and_return_input
+      :return_to_server
     end
 
   end
