@@ -61,7 +61,7 @@ class Server
 
   def wait_for_request
     puts "Waiting for Request..."
-    connection = @server.accept
+    @server.accept
   end
 
   def accept_request(connection)
