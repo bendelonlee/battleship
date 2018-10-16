@@ -5,8 +5,14 @@ require './lib/storage'
 
 class Server
 
+  @@current_game_id = nil
+
   def initialize
     @server = TCPServer.new(9293)
+  end
+
+  def self.current_game_id
+    @@current_game_id
   end
 
 
@@ -20,12 +26,15 @@ class Server
       game_id, user_input, new_game = process_request(request_line)
       if new_game
         game = start_new_game
+        game.pause_location = :ship_placement_start_coord
         game_id = Storage.new_id
       else
         game = give_game_input(game_id, user_input) if game_id && user_input
       end
+
+      @@current_game_id = game_id
       #now the game runs. It delivers it's output of to the HTTPTranslator class until it needs more input, then returns
-      store_game_data(game, game_id)
+      store_game_data(game, game_id) if game.is_a? Game
       deliver_response(connection)
 
       # binding.pry
@@ -38,6 +47,7 @@ class Server
   def start_new_game
     new_game = Game.new(Interface::DEFAULT_OPTIONS)
     new_game.play
+    new_game
   end
 
   def give_game_input(game_id, user_input)

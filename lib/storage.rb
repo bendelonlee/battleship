@@ -17,6 +17,7 @@ class Storage
 
 
     def save_game(game = Game.current_game, game_id = nil)
+  
       if caller[3..7].join[/get_valid_start_coord/]
         Game.current_game.pause_location = :ship_placement_start_coord
       elsif caller[3..7].join[/get_valid_end_coord/]
@@ -27,7 +28,7 @@ class Storage
       # return :id_taken if id_taken(game_id)
       #returns game id
 
-      working_id = game_id ? game_id.to_s : generate_id
+      working_id = game_id ? game_id.to_s : Storage.new_id
       File.write("./data/game_data/#{working_id}.data", Marshal.dump(game))
       # game.to_yaml
 

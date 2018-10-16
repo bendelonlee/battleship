@@ -48,6 +48,7 @@ class Game
 
   def play
     return_token = place_ships_now
+    binding.pry
     return return_token if return_token == :return_to_server
     playing_loop
     return @winner_data
@@ -77,6 +78,7 @@ class Game
   end
 
   def game_over?
+    return false if pause_location
     if @enemy_fleet.all_sunk?
       @winner_data = {winner: 1, shots: @enemy_fleet.guesses.count}
       winner_message(:player) if printout?
@@ -210,6 +212,7 @@ class Game
         fleet.add_ship(@temp_start_coord, end_coord)
       end
       Out.put_n "Ship placement complete:"
+      @pause_location = :completely_placed
       print_board(fleet, true)
       Out.put "\n\n"
     end
@@ -230,16 +233,23 @@ class Game
       Out.put_n "Time to place a #{ship_len} unit long ship"
       Out.put_n "Enter start coordinate (Ex. A3)"
       start_coord = get_coord_from_user
+      return start_coord if start_coord == :return_to_server
       return start_coord if board.valid_start?(start_coord, ship_len)
+      print_board(@player_1, true) if Out.online?
       Out.put_n "Invalid coordinate."
       get_valid_start_coord(board, ship_len)
     end
 
     def get_valid_end_coord(board, start_coord, ship_len)
+      require 'pry'; binding.pry if caller.size > 20
       possible_coords = board.get_possible_end_coords(start_coord, ship_len)
       Out.put_n "Enter end coordinate. Options:"
       Out.put_n CoordMath.coords_to_s(possible_coords)
       end_coord = get_coord_from_user
+      if end_coord == :return_to_server
+        @pause_location = :ship_placement_end_coord
+        return end_coord
+      end
       if possible_coords.include?(end_coord)
         return end_coord
       end
