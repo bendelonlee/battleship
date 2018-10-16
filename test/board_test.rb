@@ -1,5 +1,5 @@
-require "./test/test_helper"
-require "./lib/board"
+require './test/test_helper'
+require './lib/board'
 require 'pry'
 require 'set'
 
