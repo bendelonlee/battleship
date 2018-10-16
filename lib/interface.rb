@@ -42,8 +42,8 @@ class Interface
   end
 
   def instructions
-    Out.put_n "===================", "Kill their battleship."
-    Out.put_n "Don't let them kill you.", "==================="
+    Out.put_n "===================\nKill their battleship."
+    Out.put_n "Don't let them kill you.\n==================="
   end
 
   def change_options
@@ -51,7 +51,7 @@ class Interface
     change_y
     change_ships
     change_ai
-    Out.put_n "Options updated", ""
+    Out.put_n "Options updated\n"
   end
 
   def change_x

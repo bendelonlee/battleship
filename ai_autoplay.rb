@@ -17,7 +17,7 @@ ai_notes += "\nIf hit a ship, then missed, then hit after tring again, continue 
 ai_notes += "\nIf it's going in a line but then misses & ship still isn't sunk, fire in other direction"
 
 game_data = []
-times_to_run = 25000
+times_to_run = 1000
 start_time = Time.now
 
 times_to_run.times {
