@@ -156,7 +156,6 @@ class Game
   end
 
   def print_board(fleet, print_ships = true)
-    @printer.print_board(fleet, print_ships)
     player_num = fleet == @player_fleet ? 1 : 2
     if Out.online?
       Out.put_n "Player #{player_num} fleet"
@@ -164,6 +163,7 @@ class Game
       Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
       Out.put_n "Player #{player_num} fleet".red if player_num == 2
     end
+    @printer.print_board(fleet, print_ships)
   end
 
     def place_ships(player, pause_info = nil)

@@ -9,6 +9,7 @@ class HTTPTranslator
   FONT = '<font face="Courier" color="white">'
   BACKGROUND = '<body style="background-color:navy;">'
   MESSAGE_START = STATUS + "\r\n\r\n" + "<html><center>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
+  ROW_COLUMN_SETUP = "<div class=\"row\"><div class=\"column\">"
   FORM = "<form>
   GAME:<br>
   <input type=\"text\" name=\"game\" value=\"77\"><br>
