@@ -17,9 +17,11 @@ class Server
       request_line = accept_request(connection)
       next unless request_line
       game_id, user_input = process_request(request_line)
-      give_game_input(game_id, user_input) if game_id && user_input
+      game = give_game_input(game_id, user_input) if game_id && user_input
       #now the game runs. It delivers it's output of to the HTTPTranslator class until it needs more input, then returns
+      store_game_data(game, game_id)
       deliver_response(connection)
+
       # binding.pry
       close_connection(connection)
     end
@@ -27,6 +29,10 @@ class Server
 
   def give_game_input(game_id, user_input)
     Storage.load_and_run_game(game_id, user_input)
+  end
+
+  def store_game_data(game, game_id)
+    Storage.save_game(game, game_id)
   end
 
 

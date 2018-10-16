@@ -12,7 +12,7 @@ class Storage
 
     def game_ids
     end
-    def save_game(game, game_id = nil)
+    def save_game(game = Game.current_game, game_id = nil)
       if caller[3..7].join[/get_valid_start_coord/]
         Game.current_game.pause_location = :ship_placement_start_coord
       elsif caller[3..7].join[/get_valid_end_coord/]
@@ -37,11 +37,14 @@ class Storage
       loaded_game = Game.set_current_game(Storage.load_game(game_id))
       if loaded_game.pause_location == :ship_placement_start_coord
         loaded_game.place_ships_now
+        return loaded_game
       elsif loaded_game.pause_location == :ship_placement_end_coord
         pause_info = true
         loaded_game.place_ships_now(loaded_game.temp_start_coord)
+        return loaded_game
       else
         loaded_game.playing_loop
+        return loaded_game
       end
     end
 
