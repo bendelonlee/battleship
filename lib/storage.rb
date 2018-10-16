@@ -3,15 +3,19 @@ class Storage
 
 
   class << self
-    def id_taken?(id)
+    def list_of_saves
+      Dir["./data/game_data/*"].join.scan(/\w+(?=\.data)/)
     end
 
-    def generate_id
-      1
+    def new_id
+      i = 1
+      loop do
+        i += 1
+        return i.to_s unless list_of_saves.include?(i.to_s)
+      end
     end
 
-    def game_ids
-    end
+
     def save_game(game = Game.current_game, game_id = nil)
       if caller[3..7].join[/get_valid_start_coord/]
         Game.current_game.pause_location = :ship_placement_start_coord

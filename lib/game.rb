@@ -2,6 +2,7 @@ require './lib/board.rb'
 require './lib/printer.rb'
 require './lib/guess.rb'
 require './lib/ai.rb'
+require './lib/http_translator'
 require 'pry'
 
 class Game
@@ -42,11 +43,12 @@ class Game
   end
 
   def delay
-    sleep(@time_delay)
+    sleep(@time_delay) unless Out.online?
   end
 
   def play
-    place_ships_now
+    return_token = place_ships_now
+    return return_token if return_token == :return_to_server
     playing_loop
     return @winner_data
   end
@@ -55,7 +57,9 @@ class Game
 
     place_ships(@player_2) if @enemy_fleet.ships == []
     @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
-    place_ships(@player_1, pause_info)
+    return_token =  place_ships(@player_1, pause_info)
+    return return_token if return_token == :return_to_server
+
   end
 
   def playing_loop
@@ -99,14 +103,16 @@ class Game
 
   def play_round(player)
     if player == :person1 || player == :person2
-      player == :person1 ? fleet = @enemy_fleet : fleet = @player_fleet
+      fleet = player == :person1 ? @enemy_fleet : @player_fleet
       print_board(fleet, false) if printout?
-      coord = get_guess_coord
+
+
+      coord = get_guess_coord("Enter coordinate of next strike (Ex. A3)")
       return coord if coord == :return_to_server
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
       fleet.add_guess(coord)
       sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
-      print_board(fleet, false) if printout?
+      print_board(fleet, false) if printout? && !Out.online?
       delay
       if printout?
         fleet.guesses.last.hit ? (Out.put "Player hit a ship!!!\n\n") : (Out.put "Player missed!\n\n")
@@ -115,6 +121,7 @@ class Game
         Out.put_n "Player sunk a ship!\n\n\n"
       end
       delay
+
     else
       if player == :computer2
         fleet = @player_fleet
@@ -129,7 +136,7 @@ class Game
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
       fleet.guesses << Guess.new(fleet, coord)
       sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
-      print_board(fleet, true) if printout?
+      print_board(fleet, true) if printout? && !Out.online?
       delay
       if printout?
         Out.put "The enemy shot at #{CoordMath.xy_to_alpha_num(coord)}. "
@@ -141,14 +148,16 @@ class Game
       delay
     end
     Out.put_n "<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>" if printout?
+
   end
 
-  def get_guess_coord
-    coord = get_coord_from_user("Enter coordinate of next strike (Ex. A3)")
+  def get_guess_coord(ask)
+    coord = get_coord_from_user(ask)
     return coord if coord == :return_to_server
     return coord if unguessed?(@enemy_fleet, coord) \
     && CoordMath.coord_in_board?(@enemy_fleet, coord)
-    get_guess_coord
+    print_board(@enemy_fleet, false)
+    get_guess_coord("Invalid coordinate. Enter coordinate of next strike (Ex. A3)")
   end
 
   def unguessed?(board, coord)
@@ -164,12 +173,15 @@ class Game
       Out.put_n "Player #{player_num} fleet".red if player_num == 2
     end
     @printer.print_board(fleet, print_ships)
+    Out.put HTTPTranslator::NEW_COLUMN if Out.online?
+
   end
 
     def place_ships(player, pause_info = nil)
       if player == :person1 || player == :person2
         fleet = player == :person1 ? @player_fleet : @enemy_fleet
-        place_player_ships(fleet, pause_info)
+        return_token = place_player_ships(fleet, pause_info)
+        return return_token if return_token == :return_to_server
       else
         fleet = player == :computer2 ? @enemy_fleet : @player_fleet
         place_computer_ships(fleet)
@@ -185,11 +197,16 @@ class Game
           @temp_len = @unplaced_ship_lengths.shift
           print_board(fleet, true)
           @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
+          if @temp_start_coord == :return_to_server
+            @temp_start_coord = nil
+            return :return_to_server
+          end
         else
           pause_info = false
         end
         print_board(fleet, true)
         end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
+        return end_coord if end_coord == :return_to_server
         fleet.add_ship(@temp_start_coord, end_coord)
       end
       Out.put_n "Ship placement complete:"

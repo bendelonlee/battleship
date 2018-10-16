@@ -6,17 +6,21 @@ class HTTPTranslator
   HEADER = "=========================================
   |  Battleship Showdown: Sink or be Sunk!  |
   =========================================".gsub("\n","</p><p>")
+  CSS = "<style>.row {display: flex;}.column {flex: 50%;}</style>"
+
   FONT = '<font face="Courier" color="white">'
   BACKGROUND = '<body style="background-color:navy;">'
-  MESSAGE_START = STATUS + "\r\n\r\n" + "<html><center>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
   ROW_COLUMN_SETUP = "<div class=\"row\"><div class=\"column\">"
-  FORM = "<form>
-  GAME:<br>
-  <input type=\"text\" name=\"game\" value=\"77\"><br>
-  INPUT:<br>
-  <input type=\"text\" name=\"input\" value=\"a1\"><br><br>
-  <input type=\"submit\" value=\"Submit\">
+  MESSAGE_START = STATUS + "\r\n\r\n" + "<html><center>" + CSS + BACKGROUND + FONT + "<p>" + HEADER + ROW_COLUMN_SETUP + "</p><p>"
+  FORM = "<form> \
+  GAME:<br> \
+  <input type=\"text\" name=\"game\"><br> \
+  INPUT:<br> \
+  <input type=\"text\" name=\"input\"><br><br> \
+  <input type=\"submit\" value=\"Submit\"> \
   </form>"
+  NEW_COLUMN = "</div><div class=\"column\">"
+  MESSAGE_CLOSE = "</p></div></div>" + FORM + "</center></font></body>'"
   @@message = ""
 
   class << self
@@ -34,13 +38,17 @@ class HTTPTranslator
     end
 
     def give_message
-      result = @@message += "</p>" + FORM + "</center></font></body>'"
+      result = @@message += MESSAGE_CLOSE
       @@message = ""
       result
     end
 
     def has_message?
       @@message == ""? false : true
+    end
+
+    def show_message
+      @@message
     end
 
   end
