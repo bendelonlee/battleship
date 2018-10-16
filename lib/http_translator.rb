@@ -4,12 +4,18 @@ class HTTPTranslator
   attr_reader :output
   STATUS = "http/1.1 200 ok"
   HEADER = "=========================================
-           |  Battleship Showdown: Sink or be Sunk!  |
+  |  Battleship Showdown: Sink or be Sunk!  |
   =========================================".gsub("\n","</p><p>")
   FONT = '<font face="Courier" color="white">'
   BACKGROUND = '<body style="background-color:navy;">'
-  MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
-  FORM = "<form> game:<br> <input type=\"text\" game=\"Hi\"><br> input:<br> <input type=\"text\" name=\"lastname\"> </form>"
+  MESSAGE_START = STATUS + "\r\n\r\n" + "<html><center>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
+  FORM = "<form>
+  GAME:<br>
+  <input type=\"text\" name=\"game\" value=\"77\"><br>
+  INPUT:<br>
+  <input type=\"text\" name=\"input\" value=\"a1\"><br><br>
+  <input type=\"submit\" value=\"Submit\">
+  </form>"
   @@message = ""
 
   class << self
@@ -19,11 +25,15 @@ class HTTPTranslator
     end
 
     def add_to_message(string)
+      if string[//]
+        puts caller
+        puts ""
+      end
       @@message += string.gsub("\n","</p><p>")
     end
 
     def give_message
-      result = @@message += "</p>" + FORM + "</font></body>'"
+      result = @@message += "</p>" + FORM + "</center></font></body>'"
       @@message = ""
       result
     end
@@ -35,14 +45,14 @@ class HTTPTranslator
   end
 end
 
-  #
-  # def server_loop
-  #   loop do
-  #     accept
-  #
-  #     send_to_local_program
-  #     recieve_from_local_program
-  #     form_response
-  #     respond
-  #   end
-  # end
+#
+# def server_loop
+#   loop do
+#     accept
+#
+#     send_to_local_program
+#     recieve_from_local_program
+#     form_response
+#     respond
+#   end
+# end
