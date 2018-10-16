@@ -61,7 +61,13 @@ class Game
   def playing_loop
     total_shots = 0
     until game_over?
-      total_shots % 2 == 0 ? play_round(@player_1) : play_round(@player_2)
+      if total_shots % 2 == 0
+        return_token = play_round(@player_1)
+        return return_token if return_token == :return_to_server
+      else
+        return_token = play_round(@player_2)
+        return return_token if return_token == :return_to_server
+      end
       total_shots += 1
     end
   end
@@ -96,6 +102,7 @@ class Game
       player == :person1 ? fleet = @enemy_fleet : fleet = @player_fleet
       print_board(fleet, false) if printout?
       coord = get_guess_coord
+      return coord if coord == :return_to_server
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
       fleet.add_guess(coord)
       sunk_ships_after = fleet.ships.count { |ship| ship.sunk? }
@@ -138,6 +145,7 @@ class Game
 
   def get_guess_coord
     coord = get_coord_from_user("Enter coordinate of next strike (Ex. A3)")
+    return coord if coord == :return_to_server
     return coord if unguessed?(@enemy_fleet, coord) \
     && CoordMath.coord_in_board?(@enemy_fleet, coord)
     get_guess_coord
@@ -181,8 +189,6 @@ class Game
       fleet.add_ship(@temp_start_coord, end_coord)
     end
     Out.put_n "Ship placement complete:"
-    puts caller
-    binding.pry
     print_board(fleet, true)
     Out.put "\n\n"
   end
@@ -223,9 +229,7 @@ class Game
   def get_coord_from_user(ask = nil)
     Out.put_n ask if ask
     Out.put "> "
-    str = Read.in;# return :return_to_server if str == :return_to_server
-    binding.pry if str == 'load'
-
+    str = Read.in; return :return_to_server if str == :return_to_server
     if CoordMath.is_alpha_number?(str)
       return CoordMath.alpha_num_to_xy(str)
     else

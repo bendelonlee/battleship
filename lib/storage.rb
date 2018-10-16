@@ -32,7 +32,8 @@ class Storage
       game_data = File.open("./data/game_data/#{game_id}.data", 'r')
       Marshal.load(game_data)
     end
-    def load_and_run_game(game_id)
+    def load_and_run_game(game_id, user_input = nil)
+      Read.preload([user_input]) if user_input
       loaded_game = Game.set_current_game(Storage.load_game(game_id))
       if loaded_game.pause_location == :ship_placement_start_coord
         loaded_game.place_ships_now

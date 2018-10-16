@@ -9,6 +9,7 @@ class HTTPTranslator
   FONT = '<font face="Courier" color="white">'
   BACKGROUND = '<body style="background-color:navy;">'
   MESSAGE_START = STATUS + "\r\n\r\n" + "<html>" + BACKGROUND + FONT + "<p>" + HEADER + "</p><p>"
+  FORM = "<form> game:<br> <input type=\"text\" game=\"Hi\"><br> input:<br> <input type=\"text\" name=\"lastname\"> </form>"
   @@message = ""
 
   class << self
@@ -22,7 +23,7 @@ class HTTPTranslator
     end
 
     def give_message
-      result = @@message += "</p></font></body>'"
+      result = @@message += "</p>" + FORM + "</font></body>'"
       @@message = ""
       result
     end

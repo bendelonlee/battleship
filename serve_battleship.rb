@@ -1,14 +1,14 @@
 require './lib/interface'
 require './lib/out'
 require './lib/read'
+require './lib/server'
 
 Out.turn_online
 Read.turn_online
 
 
-interface = Interface.new
-p interface.interface_loop
-require 'pry'; binding.pry
+battle_server = Server.new
+battle_server.serve
 
 
 
