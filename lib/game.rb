@@ -157,85 +157,89 @@ class Game
 
   def print_board(fleet, print_ships = true)
     @printer.print_board(fleet, print_ships)
-    fleet == @player_fleet ? player_num = 1 : player_num = 2
-    Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
-    Out.put_n "Player #{player_num} fleet".red if player_num == 2
-  end
-
-  def place_ships(player, pause_info = nil)
-    if player == :person1 || player == :person2
-      fleet = player == :person1 ? @player_fleet : @enemy_fleet
-      place_player_ships(fleet, pause_info)
+    player_num = fleet == @player_fleet ? 1 : 2
+    if Out.online?
+      Out.put_n "Player #{player_num} fleet"
     else
-      fleet = player == :computer2 ? @enemy_fleet : @player_fleet
-      place_computer_ships(fleet)
+      Out.put_n"Player #{player_num} fleet".yellow if player_num == 1
+      Out.put_n "Player #{player_num} fleet".red if player_num == 2
     end
   end
 
-  def place_player_ships(fleet, pause_info = nil)
-    # binding.pry if pause_info
-
-    until @unplaced_ship_lengths.empty?
-
-      unless pause_info
-        @temp_len = @unplaced_ship_lengths.shift
-        print_board(fleet, true)
-        @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
+    def place_ships(player, pause_info = nil)
+      if player == :person1 || player == :person2
+        fleet = player == :person1 ? @player_fleet : @enemy_fleet
+        place_player_ships(fleet, pause_info)
       else
-        pause_info = false
+        fleet = player == :computer2 ? @enemy_fleet : @player_fleet
+        place_computer_ships(fleet)
       end
+    end
+
+    def place_player_ships(fleet, pause_info = nil)
+      # binding.pry if pause_info
+
+      until @unplaced_ship_lengths.empty?
+
+        unless pause_info
+          @temp_len = @unplaced_ship_lengths.shift
+          print_board(fleet, true)
+          @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
+        else
+          pause_info = false
+        end
+        print_board(fleet, true)
+        end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
+        fleet.add_ship(@temp_start_coord, end_coord)
+      end
+      Out.put_n "Ship placement complete:"
       print_board(fleet, true)
-      end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
-      fleet.add_ship(@temp_start_coord, end_coord)
+      Out.put "\n\n"
     end
-    Out.put_n "Ship placement complete:"
-    print_board(fleet, true)
-    Out.put "\n\n"
-  end
 
-  def place_computer_ships(fleet)
-    until @unplaced_ship_lengths.empty?
-      len = @unplaced_ship_lengths.shift
-      while true
-        start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
-        end_coord = fleet.get_possible_end_coords(start_coord, len).sample
-        break unless end_coord == nil
+    def place_computer_ships(fleet)
+      until @unplaced_ship_lengths.empty?
+        len = @unplaced_ship_lengths.shift
+        while true
+          start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
+          end_coord = fleet.get_possible_end_coords(start_coord, len).sample
+          break unless end_coord == nil
+        end
+        fleet.add_ship(start_coord, end_coord)
       end
-      fleet.add_ship(start_coord, end_coord)
     end
-  end
 
-  def get_valid_start_coord(board, ship_len)
-    Out.put_n "Time to place a #{ship_len} unit long ship"
-    Out.put_n "Enter start coordinate (Ex. A3)"
-    start_coord = get_coord_from_user
-    return start_coord if board.valid_start?(start_coord, ship_len)
-    Out.put_n "Invalid coordinate."
-    get_valid_start_coord(board, ship_len)
-  end
-
-  def get_valid_end_coord(board, start_coord, ship_len)
-    possible_coords = board.get_possible_end_coords(start_coord, ship_len)
-    Out.put_n "Enter end coordinate. Options:"
-    Out.put_n CoordMath.coords_to_s(possible_coords)
-    end_coord = get_coord_from_user
-    if possible_coords.include?(end_coord)
-      return end_coord
+    def get_valid_start_coord(board, ship_len)
+      Out.put_n "Time to place a #{ship_len} unit long ship"
+      Out.put_n "Enter start coordinate (Ex. A3)"
+      start_coord = get_coord_from_user
+      return start_coord if board.valid_start?(start_coord, ship_len)
+      Out.put_n "Invalid coordinate."
+      get_valid_start_coord(board, ship_len)
     end
-    Out.put_n "Invalid coordinate. Ship must be in an orthogonal line #{ship_len} units long."
-    get_valid_end_coord(board, start_coord, ship_len)
-  end
 
-  def get_coord_from_user(ask = nil)
-    Out.put_n ask if ask
-    Out.put "> "
-    str = Read.in; return :return_to_server if str == :return_to_server
-    if CoordMath.is_alpha_number?(str)
-      return CoordMath.alpha_num_to_xy(str)
-    else
-      Out.put_n "Invalid input '#{str}'."
-      get_coord_from_user
+    def get_valid_end_coord(board, start_coord, ship_len)
+      possible_coords = board.get_possible_end_coords(start_coord, ship_len)
+      Out.put_n "Enter end coordinate. Options:"
+      Out.put_n CoordMath.coords_to_s(possible_coords)
+      end_coord = get_coord_from_user
+      if possible_coords.include?(end_coord)
+        return end_coord
+      end
+      Out.put_n "Invalid coordinate. Ship must be in an orthogonal line #{ship_len} units long."
+      get_valid_end_coord(board, start_coord, ship_len)
     end
-  end
 
-end
+    def get_coord_from_user(ask = nil)
+      Out.put_n ask if ask
+      Out.put "> "
+      str = Read.in; return :return_to_server if str == :return_to_server
+      if CoordMath.is_alpha_number?(str)
+        return CoordMath.alpha_num_to_xy(str)
+      else
+        Out.put_n "Invalid input '#{str}'."
+        get_coord_from_user
+      end
+    end
+
+  end

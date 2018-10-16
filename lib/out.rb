@@ -6,6 +6,9 @@ class Out
     def turn_online
       @@online_mode = :online
     end
+    def online?
+      @@online_mode == :online
+    end
 
     def put(str)
       if @@online_mode == :online
