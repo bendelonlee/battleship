@@ -1,4 +1,5 @@
 require "./lib/battle_server"
+require "./lib/http_translator"
 
 class Read
   @@preloaded_input =[]
@@ -44,6 +45,7 @@ class Read
     def in
       unless @@preloaded_input.empty?
         puts "preloaded input:#{@@preloaded_input[0]}"
+        HTTPTranslator.start_message
         return check_for_commands(@@preloaded_input.shift)
       end
       if @@online_mode == :online

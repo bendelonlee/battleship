@@ -15,6 +15,7 @@ class Server
     loop do
       connection = wait_for_request
       request_line = accept_request(connection)
+      next unless request_line
       game_id, user_input = process_request(request_line)
       give_game_input(game_id, user_input) if game_id && user_input
       #now the game runs. It delivers it's output of to the HTTPTranslator class until it needs more input, then returns
@@ -38,7 +39,8 @@ class Server
     puts "Got this request:"
     request_lines = []
     line = connection.gets
-    line = line.chomp if line
+    return nil unless line
+    line = line.chomp
     #added line above because sometimes line is nil
 
     until line.empty?
