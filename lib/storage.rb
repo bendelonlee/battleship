@@ -18,11 +18,11 @@ class Storage
 
     def save_game(game = Game.current_game, game_id = nil)
 
-      if caller[3..7].join[/get_valid_start_coord/]
-        Game.current_game.pause_location = :ship_placement_start_coord
-      elsif caller[3..7].join[/get_valid_end_coord/]
+      if caller.join[/get_valid_start_coord/]
+        Game.current_game.when_in_placement = :needs_start_coord
+      elsif caller.join[/get_valid_end_coord/]
 
-        Game.current_game.pause_location = :ship_placement_end_coord
+        Game.current_game.when_in_placement = :needs_end_coord
       end
 
       # return :id_taken if id_taken(game_id)
@@ -40,7 +40,7 @@ class Storage
     def load_and_run_game(game_id, user_input = nil)
       Read.preload([user_input]) if user_input
       loaded_game = Game.set_current_game(Storage.load_game(game_id))
-      if loaded_game.pause_location
+      if loaded_game.when_in_placement
         loaded_game.play
         return loaded_game
       else

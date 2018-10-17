@@ -47,7 +47,7 @@ class InOutHTTPAndServerTest < Minitest::Test
 #     expected = "http/1.1 200 ok\r
 # \r
 # <html><center><style>.row {display: flex;}.column {flex: 50%;}</style><body style=\"background-color:navy;\"><font face=\"Courier\" color=\"white\"><p>=========================================</p><p>  |  Battleship Showdown: Sink or be Sunk!  |</p><p>  =========================================<div class=\"row\"><div class=\"column\"></p><p>Player 1 fleet</p><p>=====================</p><p>. 1 2 3 4 5 6 7 8 9 10</p><p>A ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</p><p>B ~ 1 1 1 1 1 3 3 3 ~</p><p>C ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</p><p>D ~ ~ 2 2 2 2 ~ ~ ~ ~</p><p>E ~ ~ ~ ~ ~ ~ ~ ~ ~ ~</p><p>=====================</p><p></div><div class=\"column\">Invalid coordinate.</p><p>Time to place a 5 unit long ship</p><p>Enter start coordinate (Ex. A3)</p><p>> Invalid input 'load'.</p><p>> <p> Game_id:<p></p></div></div><form>   INPUT:<br>   <input type=\"text\" name=\"input\"><br><br>   <input type=\"submit\" value=\"Submit\">   </form></center></font></body>'"
-    # assert_equal expected, HTTPTranslator.give_message
+    assert_equal "", HTTPTranslator.give_message
 
   end
 

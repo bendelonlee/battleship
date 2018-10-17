@@ -26,7 +26,7 @@ class Server
       game_id, user_input, new_game = process_request(request_line)
       if new_game
         game = start_new_game
-        game.pause_location = :ship_placement_start_coord
+        game.when_in_placement = :needs_start_coord
         game_id = Storage.new_id
       else
         game = give_game_input(game_id, user_input) if game_id && user_input
