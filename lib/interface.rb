@@ -5,17 +5,18 @@ require './lib/out'
 
 class Interface
   DEFAULT_OPTIONS = { board_width: 10, board_height: 5, ships: [5,4,3,2], a_i: true,
-              time_delay: 0, player_1: :person1, player_2: :computer2,
+              time_delay: 0.5, player_1: :person1, player_2: :computer2,
             output: true}
+
   def initialize
-    @options =  DEFAULT_OPTIONS
+
+    @options = DEFAULT_OPTIONS
     Out.put_n "========================================="
     Out.put_n "   Welcome to the Battleship showdown!"
     Out.put_n "========================================="
   end
 
   def interface_loop
-    # binding.pry
 
     while true
       Out.put_n "Would you like to (p)lay, read the (i)instructions, change the (o)ptions, or (q)uit?"
@@ -37,9 +38,11 @@ class Interface
         instructions
       when "o"
         change_options
+
       when "q"
         return # class.quit_interface(nil)
       end
+
     end
   end
 
@@ -86,7 +89,7 @@ class Interface
 
   def change_ai
     Out.put_n "Do you want AI? (y/n)"
-    a_i = Read.in; a_i = Read.in; return a_i if a_i == :return_to_server
+    a_i = Read.in; return a_i if a_i == :return_to_server
     if a_i == "y"
       @options[:a_i] = true
     elsif a_i == "n"
@@ -105,13 +108,13 @@ class Interface
       ship_count += 1
       Out.put_n "Enter length for ship #{ship_count}"
       Out.put "> "
-      ship_length = Read.in;
-      return ship_length if ship_length == :return_to_server
-      ship_length = ship_length.to_i
-      if ship_length == 0
+      ship_lengths = Read.in;
+      return ship_lengths if ship_lengths == :return_to_server
+      ship_lengths = ship_lengths.to_i
+      if ship_lengths == 0
         finished = true
       else
-        ships << ship_length
+        ships << ship_lengths
       end
     end
     @options[:ships] = ships

@@ -24,7 +24,7 @@ class HTTPTranslator
   class << self
 
     def start_message
-      @@message = MESSAGE_START
+      @@message = ""
     end
 
     def add_to_message(string)
@@ -35,8 +35,8 @@ class HTTPTranslator
     end
 
     def give_message
-      result = @@message + "<p> Game_id:#{Server.current_game_id}<p>" + MESSAGE_CLOSE 
-      @@message = ""
+      result = MESSAGE_START + @@message + "<p> Game_id:#{Server.current_game_id}<p>" + MESSAGE_CLOSE
+      start_message
       result
     end
 

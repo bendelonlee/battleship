@@ -3,20 +3,22 @@ require './lib/printer.rb'
 require './lib/guess.rb'
 require './lib/ai.rb'
 require './lib/http_translator'
+require './lib/interface'
 require 'pry'
 
 class Game
-  attr_reader :winner_data, :temp_start_coord
-  attr_accessor :pause_location
 
-  def initialize(options = nil)
+  attr_reader :winner_data, :temp_start_coord
+  attr_accessor :when_in_placement
+
+  def initialize(options = Interface::DEFAULT_OPTIONS)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
     @printout = options[:output]
     @ship_lengths = options[:ships]
-    @unplaced_ship_lengths = @ship_lengths.clone
+    @unplaced_ship_index = 0
     @player_1 = options[:player_1]
     @player_2 = options[:player_2]
     @ai = AI.new
@@ -24,7 +26,7 @@ class Game
     @ai_comp_2 = options[:a_i]
     @time_delay = options[:time_delay]
     @@current_game = self
-    @pause_location = nil
+    @when_in_placement = nil
     @temp_start_coord = nil
 
   end
@@ -46,10 +48,8 @@ class Game
   end
 
   def play
-    unless @pause_location == :completely_placed
-      return_token = place_ships_now
-      return return_token if return_token == :return_to_server
-    end
+    return_token = place_ships_now
+    return return_token if return_token == :return_to_server
     playing_loop
     return @winner_data
   end
@@ -57,14 +57,14 @@ class Game
   def place_ships_now(pause_info = nil)
 
     place_ships(@player_2) if @enemy_fleet.ships == []
-    @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
     return_token =  place_ships(@player_1, pause_info)
     return return_token if return_token == :return_to_server
 
   end
 
   def playing_loop
-    @pause_location = nil
+
+    @when_in_placement = nil
     total_shots = 0
     until game_over?
       if total_shots % 2 == 0
@@ -79,7 +79,7 @@ class Game
   end
 
   def game_over?
-    return false if pause_location
+    return false if @when_in_placement
     if @enemy_fleet.all_sunk?
       @winner_data = {winner: 1, shots: @enemy_fleet.guesses.count}
       winner_message(:player) if printout?
@@ -192,34 +192,31 @@ class Game
   end
 
   def place_player_ships(fleet, pause_info = nil)
-
-    until @unplaced_ship_lengths.empty?
-
-      unless pause_info
-        @temp_len = @unplaced_ship_lengths.shift
+    while @unplaced_ship_index < @ship_lengths.size
+      len = @ship_lengths[@unplaced_ship_index]
+      unless @when_in_placement == :needs_end_coord
         print_board(fleet, true)
-        @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
+        @temp_start_coord = get_valid_start_coord(fleet, len)
         if @temp_start_coord == :return_to_server
+          @when_in_placement = :needs_start_coord
           @temp_start_coord = nil
           return :return_to_server
         end
-      else
-        pause_info = false
       end
       print_board(fleet, true)
-      end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
+      end_coord = get_valid_end_coord(fleet, @temp_start_coord, len)
       return end_coord if end_coord == :return_to_server
       fleet.add_ship(@temp_start_coord, end_coord)
+      @unplaced_ship_index += 1
     end
     Out.put_n "Ship placement complete:"
-    @pause_location = :completely_placed
+    @when_in_placement = nil
     print_board(fleet, true)
     Out.put "\n\n"
   end
 
   def place_computer_ships(fleet)
-    until @unplaced_ship_lengths.empty?
-      len = @unplaced_ship_lengths.shift
+    @ship_lengths.each do |len|
       while true
         start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
         end_coord = fleet.get_possible_end_coords(start_coord, len).sample
@@ -242,13 +239,12 @@ class Game
   end
 
   def get_valid_end_coord(board, start_coord, ship_len)
-    require 'pry'; binding.pry if caller.size > 20
     possible_coords = board.get_possible_end_coords(start_coord, ship_len)
     Out.put_n "Enter end coordinate. Options:"
     Out.put_n CoordMath.coords_to_s(possible_coords)
     end_coord = get_coord_from_user
     if end_coord == :return_to_server
-      @pause_location = :ship_placement_end_coord
+      @when_in_placement = :needs_end_coord
       return end_coord
     end
     if possible_coords.include?(end_coord)
