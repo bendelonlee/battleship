@@ -1,3 +1,5 @@
+### Bad code - Used only to parse data for AI graphs
+
 x1 = "1	games	38	shots
 1	games	44	shots
 1	games	41	shots

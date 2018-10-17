@@ -1,3 +1,5 @@
+# Brand new to python. Rough code
+
 import numpy as np
 import matplotlib.pyplot as plt
 
