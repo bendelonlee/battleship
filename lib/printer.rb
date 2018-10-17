@@ -7,7 +7,6 @@ class Printer
   def print_board(board, show_ships = true)
     create_board
     add_ships(board.ships) if show_ships
-    ### print them differently if the ship is sunk
     add_guesses(board.guesses)
     print_board_to_screen
   end
@@ -45,7 +44,7 @@ class Printer
         elsif y == @print_array.length - 1
           @print_array[y][x] = "="
         elsif y > 1 && x % 2 == 0
-          @print_array[y][x] = "~"
+          @print_array[y][x] = "~".blue
         end
       end
     end
@@ -65,10 +64,10 @@ class Printer
         if guess.ship.sunk? == true
           mark = "S"
         else
-          mark = "X"
+          mark = "X".red
         end
       else
-        mark = "*"
+        mark = "*".yellow
       end
       @print_array[guess.coord[:y] + 1][(guess.coord[:x]) * 2] = mark
     end

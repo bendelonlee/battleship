@@ -1,5 +1,5 @@
-require "./test/test_helper"
-require "./lib/coord_math"
+require './test/test_helper'
+require './lib/coord_math'
 require './lib/board'
 
 class CoordMathTest < Minitest::Test

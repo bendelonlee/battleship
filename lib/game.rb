@@ -14,7 +14,6 @@ class Game
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
     @printer = Printer.new(options[:board_width], options[:board_height])
-    # @options = options
     @printout = options[:output]
     @ship_lengths = options[:ships]
     @unplaced_ship_lengths = @ship_lengths.clone
@@ -105,12 +104,14 @@ class Game
     end
   end
 
+  def person?(player)
+    player == :person1 || player == :person2
+  end
+
   def play_round(player)
-    if player == :person1 || player == :person2
+    if person?(player)
       fleet = player == :person1 ? @enemy_fleet : @player_fleet
       print_board(fleet, false) if printout?
-
-
       coord = get_guess_coord("Enter coordinate of next strike (Ex. A3)")
       return coord if coord == :return_to_server
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
@@ -125,8 +126,7 @@ class Game
         Out.put_n "Player sunk a ship!\n\n\n"
       end
       delay
-
-    else
+    else # is a computer
       if player == :computer2
         fleet = @player_fleet
         coord = @ai.get_coord(fleet, @ai_comp_2)
@@ -134,7 +134,6 @@ class Game
         fleet = @enemy_fleet
         coord = @ai.get_coord(fleet, @ai_comp_1)
       end
-
       print_board(fleet, true) if printout?
       delay
       sunk_ships_before = fleet.ships.count { |ship| ship.sunk? }
