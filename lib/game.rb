@@ -65,6 +65,7 @@ class Game
   end
 
   def playing_loop
+    @pause_location = nil
     total_shots = 0
     until game_over?
       if total_shots % 2 == 0
