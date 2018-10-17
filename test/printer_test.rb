@@ -6,6 +6,7 @@ require './lib/board.rb'
 
 class PrinterTest < Minitest::Test
   def setup
+    Out.turn_online
     @board = Board.new(2, 2)
     @printer = Printer.new(2, 2)
   end

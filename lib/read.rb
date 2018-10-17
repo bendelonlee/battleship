@@ -1,6 +1,8 @@
 require "./lib/http_translator"
 
 class Read
+  @@recorded_input = []
+  @@record_mode = :off
   @@preloaded_input =[]
   @@online_mode = :offline
   class << self
@@ -50,7 +52,9 @@ class Read
       if @@online_mode == :online
         return check_for_commands(http)
       else
-        return check_for_commands(gets.chomp)
+        input_from_terminal = gets.chomp
+        @@recorded_input << input_from_terminal
+        return check_for_commands(input_from_terminal)
       end
     end
 

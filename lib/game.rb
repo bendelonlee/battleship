@@ -242,7 +242,7 @@ class Game
   end
 
   def get_valid_end_coord(board, start_coord, ship_len)
-    require 'pry'; binding.pry if caller.size > 20
+    # require 'pry'; binding.pry if caller.size > 20
     possible_coords = board.get_possible_end_coords(start_coord, ship_len)
     Out.put_n "Enter end coordinate. Options:"
     Out.put_n CoordMath.coords_to_s(possible_coords)

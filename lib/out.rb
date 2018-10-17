@@ -23,7 +23,6 @@ class Out
     end
 
     def http(str)
-      HTTPTranslator.start_message unless HTTPTranslator.has_message?
       HTTPTranslator.add_to_message(str)
     end
 
