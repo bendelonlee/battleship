@@ -1,4 +1,3 @@
-require "./lib/battle_server"
 require "./lib/http_translator"
 
 class Read
