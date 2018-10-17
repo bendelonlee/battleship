@@ -12,15 +12,17 @@ class Interface
     Out.put_n "========================================="
     Out.put_n "   Welcome to the Battleship showdown!"
     Out.put_n "========================================="
-    interface_loop
   end
 
   def interface_loop
+    # binding.pry
+
     while true
       Out.put_n "Would you like to (p)lay, read the (i)instructions, change the (o)ptions, or (q)uit?"
       Out.put "> "
 
-      user_input = Read.in
+      user_input = Read.in; return user_input if user_input == :return_to_server
+
 
       case user_input
       when "p"
@@ -36,10 +38,14 @@ class Interface
       when "o"
         change_options
       when "q"
-        return
+        return # class.quit_interface(nil)
       end
     end
   end
+
+  # def self.quit_interface(return_value)
+  #   return return_value
+  # end
 
   def instructions
     Out.put_n "===================\nKill their battleship."
@@ -57,7 +63,8 @@ class Interface
   def change_x
     Out.put_n "What size board do you want in X? Valid sizes 4-26"
     Out.put "> "
-    new_x = Read.in.to_i
+    new_x = Read.in; return new_x if new_x == :return_to_server
+    new_x = new_x.to_i
     if new_x > 26 || new_x < 4
       Out.put_n "Invalid option. Option skipped."
     else
@@ -68,7 +75,8 @@ class Interface
   def change_y
     Out.put_n "What size board do you want in Y? Valid sizes 4-26"
     Out.put "> "
-    new_y = Read.in.to_i
+    new_y = Read.in; return new_y if new_y == :return_to_server
+    new_y = new_y.to_i
     if new_y > 26 || new_y < 4
       Out.put_n "Invalid option. Option skipped."
     else
@@ -78,7 +86,7 @@ class Interface
 
   def change_ai
     Out.put_n "Do you want AI? (y/n)"
-    a_i = Read.in
+    a_i = Read.in; a_i = Read.in; return a_i if a_i == :return_to_server
     if a_i == "y"
       @options[:a_i] = true
     elsif a_i == "n"
@@ -97,7 +105,9 @@ class Interface
       ship_count += 1
       Out.put_n "Enter length for ship #{ship_count}"
       Out.put "> "
-      ship_length = Read.in.to_i
+      ship_length = Read.in;
+      return ship_length if ship_length == :return_to_server
+      ship_length = ship_length.to_i
       if ship_length == 0
         finished = true
       else

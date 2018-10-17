@@ -1,11 +1,15 @@
 require './lib/interface'
 require './lib/out'
 require './lib/read'
+require './lib/server'
 
 Out.turn_online
 Read.turn_online
 
-Interface.new
+
+battle_server = Server.new
+battle_server.serve
+
 
 
 

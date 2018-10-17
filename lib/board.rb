@@ -33,6 +33,7 @@ class Board
   end
 
   def get_possible_end_coords(start_c, ship_len)
+  
     return [] unless CoordMath.coord_in_board?(self, start_c)
     CoordMath.get_end_coords_in_board(self, start_c, ship_len).select do |end_c|
       space_for_ship?(CoordMath.get_conseq_coords(start_c, end_c))
