@@ -105,13 +105,13 @@ class Interface
       ship_count += 1
       Out.put_n "Enter length for ship #{ship_count}"
       Out.put "> "
-      ship_length = Read.in;
-      return ship_length if ship_length == :return_to_server
-      ship_length = ship_length.to_i
-      if ship_length == 0
+      ship_lengths = Read.in;
+      return ship_lengths if ship_lengths == :return_to_server
+      ship_lengths = ship_lengths.to_i
+      if ship_lengths == 0
         finished = true
       else
-        ships << ship_length
+        ships << ship_lengths
       end
     end
     @options[:ships] = ships

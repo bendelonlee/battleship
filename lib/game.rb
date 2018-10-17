@@ -16,7 +16,7 @@ class Game
     @printer = Printer.new(options[:board_width], options[:board_height])
     @printout = options[:output]
     @ship_lengths = options[:ships]
-    @unplaced_ship_lengths = @ship_lengths.clone
+    @unplaced_ship_index = 0
     @player_1 = options[:player_1]
     @player_2 = options[:player_2]
     @ai = AI.new
@@ -55,7 +55,6 @@ class Game
   def place_ships_now(pause_info = nil)
 
     place_ships(@player_2) if @enemy_fleet.ships == []
-    @unplaced_ship_lengths = @ship_lengths.clone if @unplaced_ship_lengths == []
     return_token =  place_ships(@player_1, pause_info)
     return return_token if return_token == :return_to_server
 
@@ -191,9 +190,9 @@ class Game
 
   def place_player_ships(fleet, pause_info = nil)
 
-    until @unplaced_ship_lengths.empty? && @temp_len == nil
+    while @unplaced_ship_index < @ship_lengths.size
       unless @when_in_placement == :needs_end_coord
-        @temp_len = @unplaced_ship_lengths.shift unless @temp_len
+        len = @ship_lengths[@unplaced_ship_index]
         print_board(fleet, true)
         @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
         if @temp_start_coord == :return_to_server
@@ -203,10 +202,11 @@ class Game
         end
       end
       print_board(fleet, true)
-      end_coord = get_valid_end_coord(fleet, @temp_start_coord, @temp_len)
-      @temp_len = nil
+      end_coord = get_valid_end_coord(fleet, @temp_start_coord, len)
       return end_coord if end_coord == :return_to_server
       fleet.add_ship(@temp_start_coord, end_coord)
+      @unplaced_ship_index += 1
+      binding.pry
     end
     Out.put_n "Ship placement complete:"
     @when_in_placement = nil
@@ -215,8 +215,8 @@ class Game
   end
 
   def place_computer_ships(fleet)
-    until @unplaced_ship_lengths.empty?
-      len = @unplaced_ship_lengths.shift
+    until @ship_lengths.empty?
+      len = @ship_lengths.shift
       while true
         start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
         end_coord = fleet.get_possible_end_coords(start_coord, len).sample
