@@ -45,7 +45,7 @@ class Server
 
 
   def start_new_game
-    new_game = Game.new(Interface::DEFAULT_OPTIONS)
+    new_game = Game.new
     new_game.play
     new_game
   end

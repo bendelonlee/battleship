@@ -3,13 +3,15 @@ require './lib/printer.rb'
 require './lib/guess.rb'
 require './lib/ai.rb'
 require './lib/http_translator'
+require './lib/interface'
 require 'pry'
 
 class Game
+
   attr_reader :winner_data, :temp_start_coord
   attr_accessor :when_in_placement
 
-  def initialize(options = nil)
+  def initialize(options = Interface::DEFAULT_OPTIONS)
     return unless options
     @player_fleet = Board.new(options[:board_width], options[:board_height])
     @enemy_fleet = Board.new(options[:board_width], options[:board_height])
@@ -61,6 +63,7 @@ class Game
   end
 
   def playing_loop
+
     @when_in_placement = nil
     total_shots = 0
     until game_over?
@@ -76,7 +79,7 @@ class Game
   end
 
   def game_over?
-    return false if when_in_placement
+    return false if @when_in_placement
     if @enemy_fleet.all_sunk?
       @winner_data = {winner: 1, shots: @enemy_fleet.guesses.count}
       winner_message(:player) if printout?
@@ -189,12 +192,11 @@ class Game
   end
 
   def place_player_ships(fleet, pause_info = nil)
-
     while @unplaced_ship_index < @ship_lengths.size
+      len = @ship_lengths[@unplaced_ship_index]
       unless @when_in_placement == :needs_end_coord
-        len = @ship_lengths[@unplaced_ship_index]
         print_board(fleet, true)
-        @temp_start_coord = get_valid_start_coord(fleet, @temp_len)
+        @temp_start_coord = get_valid_start_coord(fleet, len)
         if @temp_start_coord == :return_to_server
           @when_in_placement = :needs_start_coord
           @temp_start_coord = nil
@@ -206,7 +208,6 @@ class Game
       return end_coord if end_coord == :return_to_server
       fleet.add_ship(@temp_start_coord, end_coord)
       @unplaced_ship_index += 1
-      binding.pry
     end
     Out.put_n "Ship placement complete:"
     @when_in_placement = nil
@@ -215,8 +216,7 @@ class Game
   end
 
   def place_computer_ships(fleet)
-    until @ship_lengths.empty?
-      len = @ship_lengths.shift
+    @ship_lengths.each do |len|
       while true
         start_coord = { x: rand(fleet.width) + 1, y: rand(fleet.height) + 1}
         end_coord = fleet.get_possible_end_coords(start_coord, len).sample

@@ -52,7 +52,7 @@ class Read
       if @@online_mode == :online
         return check_for_commands(http)
       else
-        input_from_terminal = gets.chomp
+        input_from_terminal = $stdin.gets.chomp
         @@recorded_input << input_from_terminal
         return check_for_commands(input_from_terminal)
       end
