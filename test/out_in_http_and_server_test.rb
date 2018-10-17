@@ -2,7 +2,6 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/out.rb'
 require './lib/read.rb'
-require './lib/battle_server.rb'
 require './lib/http_translator.rb'
 
 

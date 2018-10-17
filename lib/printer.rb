@@ -44,7 +44,7 @@ class Printer
         elsif y == @print_array.length - 1
           @print_array[y][x] = "="
         elsif y > 1 && x % 2 == 0
-          @print_array[y][x] = "~".blue
+          @print_array[y][x] = Out.online? ? "~" : "~".blue
         end
       end
     end
@@ -64,10 +64,10 @@ class Printer
         if guess.ship.sunk? == true
           mark = "S"
         else
-          mark = "X".red
+          mark = Out.online? ? "X" : "X".red
         end
       else
-        mark = "*".yellow
+        mark = Out.online? ? "*" : "*".yellow
       end
       @print_array[guess.coord[:y] + 1][(guess.coord[:x]) * 2] = mark
     end
