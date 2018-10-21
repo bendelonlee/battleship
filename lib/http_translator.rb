@@ -12,11 +12,18 @@ class HTTPTranslator
   BACKGROUND = '<body style="background-color:navy;">'
   ROW_COLUMN_SETUP = "<div class=\"row\"><div class=\"column\">"
   MESSAGE_START = STATUS + "\r\n\r\n" + "<html><center>" + CSS + BACKGROUND + FONT + "<p>" + HEADER + ROW_COLUMN_SETUP + "</p><p>"
-  FORM = "<form> \
+  FORM =
+
+
+
+  "<form> \
+  GAME:<br> \
+  <input type=\"text\" name=\"game\"><br><br> \
   INPUT:<br> \
   <input type=\"text\" name=\"input\"><br><br> \
   <input type=\"submit\" value=\"Submit\"> \
   </form>"
+
   NEW_COLUMN = "</div><div class=\"column\">"
   MESSAGE_CLOSE = "</p></div></div>" + FORM + "</center></font></body>'"
   @@message = ""

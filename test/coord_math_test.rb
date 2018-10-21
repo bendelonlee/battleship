@@ -17,6 +17,9 @@ class CoordMathTest < Minitest::Test
     # refute @game.is_letter_and_number?('A1A1')
     # needs to be improved for somthing like this
     refute CoordMath.is_alpha_number?('1A')
+    refute CoordMath.is_alpha_number?('AA')
+    refute CoordMath.is_alpha_number?('11')
+
   end
 
   def test_get_conseq_coords

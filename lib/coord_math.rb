@@ -68,7 +68,7 @@ class CoordMath < Hash
     end
 
     def is_alpha_number?(str)
-      str.size.between?(2,3) && str[/^\w\d{1,2}/] ? true : false
+      str[/^[a-zA-Z]\d{1,2}$/] ? true : false
     end
 
   end
